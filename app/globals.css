@@ -1,0 +1,35 @@
+:root {
+  --primary: #FF69B4;
+  --primary-dark: #FF1493;
+  --accent: #FFB6C1;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100;
+  font-family: 'Ubuntu', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold;
+}
+
+a {
+  @apply transition-colors duration-300;
+}
+
+button {
+  @apply transition-all duration-300;
+}

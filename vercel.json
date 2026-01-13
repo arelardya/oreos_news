@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/uploads/:path*",
+      "destination": "/uploads/:path*"
+    }
+  ]
+}
