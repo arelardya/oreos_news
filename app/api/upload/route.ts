@@ -10,11 +10,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
+    const filename = `articles/${Date.now()}-${file.name.replace(/\s/g, '-')}`;
 
     // Upload to Vercel Blob storage
     const blob = await put(filename, file, {
       access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
     return NextResponse.json({ url: blob.url, success: true });
