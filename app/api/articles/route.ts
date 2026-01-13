@@ -5,29 +5,52 @@ import { Article } from '@/types/article';
 const ARTICLES_KEY = 'articles';
 
 async function getArticles(): Promise<Article[]> {
-  const articles = await kv.get<Article[]>(ARTICLES_KEY);
-  return articles || [];
+  try {
+    const articles = await kv.get<Article[]>(ARTICLES_KEY);
+    return articles || [];
+  } catch (error) {
+    console.error('KV get error:', error);
+    return [];
+  }
 }
 
 async function saveArticles(articles: Article[]): Promise<void> {
-  await kv.set(ARTICLES_KEY, articles);
+  try {
+    await kv.set(ARTICLES_KEY, articles);
+  } catch (error) {
+    console.error('KV set error:', error);
+    throw error;
+  }
 }
 
 export async function GET() {
-  const articles = await getArticles();
-  return NextResponse.json(articles);
+  try {
+    const articles = await getArticles();
+    return NextResponse.json(articles);
+  } catch (error) {
+    console.error('GET error:', error);
+    return NextResponse.json({ error: 'Failed to fetch articles' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
   try {
     const newArticle: Article = await request.json();
+    console.log('Creating article:', newArticle.id);
+    
     const articles = await getArticles();
     articles.unshift(newArticle);
     await saveArticles(articles);
+    
+    console.log('Article created successfully');
     return NextResponse.json({ success: true, article: newArticle });
   } catch (error) {
-    console.error('Failed to create article:', error);
-    return NextResponse.json({ success: false, error: 'Failed to create article' }, { status: 500 });
+    console.error('POST error:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Failed to create article',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 
