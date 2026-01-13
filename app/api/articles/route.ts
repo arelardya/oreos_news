@@ -1,34 +1,41 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@vercel/kv';
+import Redis from 'ioredis';
 import { Article } from '@/types/article';
 
 const ARTICLES_KEY = 'articles';
 
-function getKvClient() {
-  return createClient({
-    url: process.env.REDIS_URL || '',
-    token: process.env.oreo_READ_WRITE_TOKEN || '',
+function getRedisClient() {
+  if (!process.env.REDIS_URL) {
+    throw new Error('REDIS_URL environment variable is not set');
+  }
+  return new Redis(process.env.REDIS_URL, {
+    maxRetriesPerRequest: 3,
+    enableReadyCheck: false,
   });
 }
 
 async function getArticles(): Promise<Article[]> {
+  const redis = getRedisClient();
   try {
-    const kv = getKvClient();
-    const articles = await kv.get<Article[]>(ARTICLES_KEY);
-    return articles || [];
+    const data = await redis.get(ARTICLES_KEY);
+    return data ? JSON.parse(data) : [];
   } catch (error) {
-    console.error('KV get error:', error);
+    console.error('Redis get error:', error);
     return [];
+  } finally {
+    redis.disconnect();
   }
 }
 
 async function saveArticles(articles: Article[]): Promise<void> {
+  const redis = getRedisClient();
   try {
-    const kv = getKvClient();
-    await kv.set(ARTICLES_KEY, articles);
+    await redis.set(ARTICLES_KEY, JSON.stringify(articles));
   } catch (error) {
-    console.error('KV set error:', error);
+    console.error('Redis set error:', error);
     throw error;
+  } finally {
+    redis.disconnect();
   }
 }
 
