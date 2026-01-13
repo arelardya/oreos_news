@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { createClient } from '@vercel/kv';
 import { Article } from '@/types/article';
+
+// Create KV client with custom environment variables
+const kv = createClient({
+  url: process.env.REDIS_URL || process.env.KV_REST_API_URL || '',
+  token: process.env.oreo_READ_WRITE_TOKEN || process.env.KV_REST_API_TOKEN || '',
+});
 
 const ARTICLES_KEY = 'articles';
 
