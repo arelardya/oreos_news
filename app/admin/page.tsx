@@ -19,7 +19,8 @@ export default function AdminLoginPage() {
     e.preventDefault();
     
     if ((username === 'ghalyndra' && password === 'oreo') || 
-        (username === 'masyanda' && password === 'chiro')) {
+        (username === 'masyanda' && password === 'chiro') ||
+        (username === 'admin' && password === 'oreos2025')) {
       localStorage.setItem('adminAuth', 'true');
       localStorage.setItem('adminUser', username);
       router.push('/admin/dashboard');
@@ -80,7 +81,7 @@ export default function AdminLoginPage() {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-            ghalyndra/oreo or masyanda/chiro
+            ghalyndra/oreo | masyanda/chiro | admin/oreos2025
           </p>
         </div>
       </div>

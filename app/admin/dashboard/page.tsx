@@ -8,7 +8,7 @@ import Modal from '@/components/Modal';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<'ghalyndra' | 'masyanda' | null>(null);
+  const [currentUser, setCurrentUser] = useState<'ghalyndra' | 'masyanda' | 'admin' | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Article>>({
@@ -39,15 +39,19 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    const user = localStorage.getItem('adminUser') as 'ghalyndra' | 'masyanda';
+    const user = localStorage.getItem('adminUser') as 'ghalyndra' | 'masyanda' | 'admin';
     setCurrentUser(user);
 
     fetch('/api/articles')
       .then(res => res.json())
       .then(data => {
-        // Filter articles to show only current user's articles
-        const filteredArticles = data.filter((article: Article) => article.author === user);
-        setArticles(filteredArticles);
+        // Master admin sees all articles, others see only their own
+        if (user === 'admin') {
+          setArticles(data);
+        } else {
+          const filteredArticles = data.filter((article: Article) => article.author === user);
+          setArticles(filteredArticles);
+        }
       })
       .catch(err => console.error('Error fetching articles:', err));
   }, [router]);
@@ -151,8 +155,13 @@ export default function AdminDashboardPage() {
 
       if (response.ok) {
         const allArticles = await fetch('/api/articles').then(res => res.json());
-        const filteredArticles = allArticles.filter((article: Article) => article.author === currentUser);
-        setArticles(filteredArticles);
+        // Master admin sees all, others see only their own
+        if (currentUser === 'admin') {
+          setArticles(allArticles);
+        } else {
+          const filteredArticles = allArticles.filter((article: Article) => article.author === currentUser);
+          setArticles(filteredArticles);
+        }
       }
     } catch (error) {
       console.error('Error deleting article:', error);
@@ -177,11 +186,12 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="py-12 px-4 md:px-8">
+      <div className="container mx-auto max-w-6xl px-4">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-primary dark:text-pink-300">
-            {currentUser === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'} Dashboard
+            {currentUser === 'admin' ? 'Master Admin Dashboard' : 
+             currentUser === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'} Dashboard
           </h1>
           <button
             onClick={handleLogout}
@@ -321,7 +331,12 @@ export default function AdminDashboardPage() {
                     className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 hover:shadow-md transition-shadow"
                   >
                     <h3 className="font-bold text-primary dark:text-pink-300 mb-2">{article.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{article.date}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{article.date}</p>
+                    {currentUser === 'admin' && article.author && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        By: {article.author === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
+                      </p>
+                    )}
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(article)}

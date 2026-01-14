@@ -99,7 +99,9 @@ export default function ArticlePage() {
 
           <footer className="mt-12 pt-8 border-t-2 border-gray-200 dark:border-gray-700">
             <p className="text-gray-600 dark:text-gray-400 italic text-lg">
-              Written by <span className="text-primary dark:text-pink-300 font-semibold">Ghalyndra</span>
+              Written by <span className="text-primary dark:text-pink-300 font-semibold">
+                {article.author === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
+              </span>
             </p>
           </footer>
         </div>

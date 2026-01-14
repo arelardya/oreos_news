@@ -61,8 +61,8 @@ export default function Home() {
             onClick={() => setActiveTab('ghalyndra')}
             className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 ${
               activeTab === 'ghalyndra'
-                ? 'bg-blue-500 text-white shadow-lg scale-105'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:scale-105'
+                ? 'bg-blue-400 text-white shadow-lg scale-105'
+                : 'bg-pink-200 dark:bg-pink-300 text-gray-700 dark:text-gray-800 hover:scale-105'
             }`}
           >
             Ghalyndra 💙
@@ -71,8 +71,8 @@ export default function Home() {
             onClick={() => setActiveTab('masyanda')}
             className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 ${
               activeTab === 'masyanda'
-                ? 'bg-pink-500 text-white shadow-lg scale-105'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:scale-105'
+                ? 'bg-pink-400 text-white shadow-lg scale-105'
+                : 'bg-pink-200 dark:bg-pink-300 text-gray-700 dark:text-gray-800 hover:scale-105'
             }`}
           >
             Masyanda 🩷
