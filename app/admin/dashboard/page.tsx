@@ -481,8 +481,8 @@ export default function AdminDashboardPage() {
       
       <DateTimePickerModal
         isOpen={isDateTimePickerOpen}
-        onClose={() => setIsDateTimePickerOpen(false)}
-        onConfirm={handleScheduleConfirm}
+        onCloseAction={() => setIsDateTimePickerOpen(false)}
+        onConfirmAction={handleScheduleConfirm}
         initialDateTime={scheduledPublishAt}
       />
     </div>

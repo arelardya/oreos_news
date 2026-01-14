@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react';
 
 interface DateTimePickerModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (dateTime: string) => void;
+  onCloseAction: () => void;
+  onConfirmAction: (dateTime: string) => void;
   initialDateTime?: string;
 }
 
 export default function DateTimePickerModal({
   isOpen,
-  onClose,
-  onConfirm,
+  onCloseAction,
+  onConfirmAction,
   initialDateTime,
 }: DateTimePickerModalProps) {
   const [selectedDate, setSelectedDate] = useState('');
@@ -42,13 +42,13 @@ export default function DateTimePickerModal({
         return;
       }
       
-      onConfirm(dateTime.toISOString());
-      onClose();
+      onConfirmAction(dateTime.toISOString());
+      onCloseAction();
     }
   };
 
   const handleCancel = () => {
-    onClose();
+    onCloseAction();
   };
 
   if (!isOpen) return null;
