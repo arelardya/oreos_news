@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="py-12 px-4 md:px-8">
-      <div className="container mx-auto max-w-6xl px-4 pt-4">
+      <div className="container mx-auto max-w-6xl px-4 pt-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-primary dark:text-pink-300">
             {currentUser === 'admin' ? 'Master Admin Dashboard' : 
