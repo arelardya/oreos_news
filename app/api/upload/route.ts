@@ -10,6 +10,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    // Validate file type
+    if (!file.type.includes('webp') && !file.name.toLowerCase().endsWith('.webp')) {
+      return NextResponse.json({ error: 'Only .webp files are allowed' }, { status: 400 });
+    }
+
+    // Validate file size (30MB)
+    if (file.size > 30 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File size must be less than 30MB' }, { status: 400 });
+    }
+
     const filename = `articles/${Date.now()}-${file.name.replace(/\s/g, '-')}`;
 
     // Upload to Vercel Blob storage

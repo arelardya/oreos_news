@@ -8,6 +8,7 @@ import Modal from '@/components/Modal';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<'ghalyndra' | 'masyanda' | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Article>>({
@@ -38,14 +39,22 @@ export default function AdminDashboardPage() {
       return;
     }
 
+    const user = localStorage.getItem('adminUser') as 'ghalyndra' | 'masyanda';
+    setCurrentUser(user);
+
     fetch('/api/articles')
       .then(res => res.json())
-      .then(data => setArticles(data))
+      .then(data => {
+        // Filter articles to show only current user's articles
+        const filteredArticles = data.filter((article: Article) => article.author === user);
+        setArticles(filteredArticles);
+      })
       .catch(err => console.error('Error fetching articles:', err));
   }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminUser');
     router.push('/admin');
   };
 
@@ -96,12 +105,14 @@ export default function AdminDashboardPage() {
           slug,
           id: editingId || Date.now().toString(),
           date: formData.date || new Date().toISOString().split('T')[0],
+          author: currentUser,
         }),
       });
 
       if (response.ok) {
-        const updatedArticles = await fetch('/api/articles').then(res => res.json());
-        setArticles(updatedArticles);
+        const allArticles = await fetch('/api/articles').then(res => res.json());
+        const filteredArticles = allArticles.filter((article: Article) => article.author === currentUser);
+        setArticles(filteredArticles);
         resetForm();
         setModalState({
           isOpen: true,
@@ -139,8 +150,9 @@ export default function AdminDashboardPage() {
       });
 
       if (response.ok) {
-        const updatedArticles = await fetch('/api/articles').then(res => res.json());
-        setArticles(updatedArticles);
+        const allArticles = await fetch('/api/articles').then(res => res.json());
+        const filteredArticles = allArticles.filter((article: Article) => article.author === currentUser);
+        setArticles(filteredArticles);
       }
     } catch (error) {
       console.error('Error deleting article:', error);
@@ -168,7 +180,9 @@ export default function AdminDashboardPage() {
     <div className="py-12 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-primary dark:text-pink-300">Admin Dashboard</h1>
+          <h1 className="text-4xl font-bold text-primary dark:text-pink-300">
+            {currentUser === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'} Dashboard
+          </h1>
           <button
             onClick={handleLogout}
             className="px-6 py-2 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-colors"

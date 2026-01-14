@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLoginPage() {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
@@ -17,11 +18,13 @@ export default function AdminLoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password === 'admin123') {
+    if ((username === 'ghalyndra' && password === 'oreo') || 
+        (username === 'masyanda' && password === 'chiro')) {
       localStorage.setItem('adminAuth', 'true');
+      localStorage.setItem('adminUser', username);
       router.push('/admin/dashboard');
     } else {
-      setError('Invalid password');
+      setError('Invalid username or password');
       setPassword('');
     }
   };
@@ -36,6 +39,21 @@ export default function AdminLoginPage() {
           
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                placeholder="Enter username"
+                required
+              />
+            </div>
+
+            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password
               </label>
@@ -45,7 +63,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="Enter admin password"
+                placeholder="Enter password"
                 required
               />
               {error && (
@@ -62,7 +80,7 @@ export default function AdminLoginPage() {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-            Default password: admin123
+            ghalyndra/oreo or masyanda/chiro
           </p>
         </div>
       </div>

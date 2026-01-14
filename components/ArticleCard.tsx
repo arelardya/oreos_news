@@ -26,6 +26,9 @@ export default function ArticleCard({ article }: ArticleCardProps) {
           <time className="text-sm text-accent dark:text-pink-300 font-medium mb-2">
             {formatDate(article.date)}
           </time>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            Written by {article.author === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
+          </p>
           <h3 className="text-xl font-bold text-primary dark:text-pink-300 mb-3 hover:text-primary-dark dark:hover:text-accent transition-colors">
             {article.title}
           </h3>

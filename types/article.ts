@@ -8,4 +8,5 @@ export interface Article {
   videoUrl?: string;
   thumbnail?: string;
   likes?: number;
+  author: 'ghalyndra' | 'masyanda';
 }

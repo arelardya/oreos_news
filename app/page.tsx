@@ -10,6 +10,7 @@ import { Article } from '@/types/article';
 export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'ghalyndra' | 'masyanda'>('ghalyndra');
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -43,13 +44,43 @@ export default function Home() {
     return <LoadingSpinner />;
   }
 
+  // Filter articles based on active tab
+  const filteredArticles = articles.filter(article => article.author === activeTab);
+
   return (
     <>
       <div className="bg-gradient-to-b from-primary via-accent via-30% to-pink-50 dark:from-primary-dark dark:via-pink-300 dark:via-30% dark:to-pink-100">
         <HeroSection />
         <QuoteSection />
       </div>
-      <ArticleGrid articles={articles} />
+      
+      {/* Author Tabs */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            onClick={() => setActiveTab('ghalyndra')}
+            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 ${
+              activeTab === 'ghalyndra'
+                ? 'bg-blue-500 text-white shadow-lg scale-105'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:scale-105'
+            }`}
+          >
+            Ghalyndra 💙
+          </button>
+          <button
+            onClick={() => setActiveTab('masyanda')}
+            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 ${
+              activeTab === 'masyanda'
+                ? 'bg-pink-500 text-white shadow-lg scale-105'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:scale-105'
+            }`}
+          >
+            Masyanda 🩷
+          </button>
+        </div>
+      </div>
+      
+      <ArticleGrid articles={filteredArticles} />
     </>
   );
 }
