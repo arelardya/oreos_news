@@ -17,6 +17,12 @@ export default function Home() {
       const startTime = Date.now();
       
       try {
+        // First, trigger auto-publish for any scheduled articles
+        await fetch('/api/articles/publish-scheduled', {
+          cache: 'no-store'
+        }).catch(err => console.log('Auto-publish check:', err));
+        
+        // Then fetch all articles (including newly published ones)
         const res = await fetch('/api/articles', {
           cache: 'no-store'
         });

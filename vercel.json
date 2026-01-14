@@ -4,11 +4,5 @@
       "source": "/uploads/:path*",
       "destination": "/uploads/:path*"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/articles/publish-scheduled",
-      "schedule": "*/5 * * * *"
-    }
   ]
 }
