@@ -55,8 +55,9 @@ export default function Home() {
       </div>
       
       {/* Author Tabs */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center gap-4 mb-8">
+      <div className="bg-pink-100 dark:bg-pink-200">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-center gap-4 mb-8">
           <button
             onClick={() => setActiveTab('ghalyndra')}
             className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 ${
@@ -78,6 +79,7 @@ export default function Home() {
             Masyanda 🩷
           </button>
         </div>
+      </div>
       </div>
       
       <ArticleGrid articles={filteredArticles} />
