@@ -109,7 +109,7 @@ export default function AdminDashboardPage() {
           slug,
           id: editingId || Date.now().toString(),
           date: formData.date || new Date().toISOString().split('T')[0],
-          author: currentUser,
+          author: currentUser === 'admin' ? formData.author : currentUser,
         }),
       });
 
@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="py-12 px-4 md:px-8">
-      <div className="container mx-auto max-w-6xl px-4">
+      <div className="container mx-auto max-w-6xl px-4 pt-4">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-primary dark:text-pink-300">
             {currentUser === 'admin' ? 'Master Admin Dashboard' : 
@@ -247,6 +247,23 @@ export default function AdminDashboardPage() {
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
+
+              {currentUser === 'admin' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Author *
+                  </label>
+                  <select
+                    required
+                    value={formData.author || 'ghalyndra'}
+                    onChange={(e) => setFormData({ ...formData, author: e.target.value as 'ghalyndra' | 'masyanda' })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="ghalyndra">Ghalyndra 💙</option>
+                    <option value="masyanda">Masyanda 🩷</option>
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

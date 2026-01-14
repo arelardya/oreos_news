@@ -79,10 +79,6 @@ export default function AdminLoginPage() {
               Login
             </button>
           </form>
-
-          <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-            ghalyndra/oreo | masyanda/chiro | admin/oreos2025
-          </p>
         </div>
       </div>
     </div>
