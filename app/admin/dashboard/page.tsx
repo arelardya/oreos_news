@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Article } from '@/types/article';
 import ImageUpload from '@/components/ImageUpload';
 import Modal from '@/components/Modal';
+import DateTimePickerModal from '@/components/DateTimePickerModal';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -32,6 +33,9 @@ export default function AdminDashboardPage() {
     message: '',
     type: 'success',
   });
+  const [isDateTimePickerOpen, setIsDateTimePickerOpen] = useState(false);
+  const [scheduledPublishAt, setScheduledPublishAt] = useState<string | undefined>(undefined);
+  const [publishOption, setPublishOption] = useState<'now' | 'schedule'>('now');
 
   useEffect(() => {
     if (localStorage.getItem('adminAuth') !== 'true') {
@@ -42,7 +46,7 @@ export default function AdminDashboardPage() {
     const user = localStorage.getItem('adminUser') as 'ghalyndra' | 'masyanda' | 'admin';
     setCurrentUser(user);
 
-    fetch('/api/articles')
+    fetch('/api/articles?includeScheduled=true')
       .then(res => res.json())
       .then(data => {
         // Master admin sees all articles, others see only their own
@@ -91,6 +95,12 @@ export default function AdminDashboardPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // If ghalyndra wants to schedule, open the date picker
+    if (currentUser === 'ghalyndra' && publishOption === 'schedule' && !scheduledPublishAt && !editingId) {
+      setIsDateTimePickerOpen(true);
+      return;
+    }
+    
     const method = editingId ? 'PUT' : 'POST';
     const url = '/api/articles';
     
@@ -99,6 +109,12 @@ export default function AdminDashboardPage() {
       ?.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') || '';
+    
+    // Determine article status
+    let status: 'draft' | 'scheduled' | 'published' = 'published';
+    if (currentUser === 'ghalyndra' && publishOption === 'schedule' && scheduledPublishAt) {
+      status = 'scheduled';
+    }
     
     try {
       const response = await fetch(url, {
@@ -110,20 +126,31 @@ export default function AdminDashboardPage() {
           id: editingId || Date.now().toString(),
           date: formData.date || new Date().toISOString().split('T')[0],
           author: currentUser === 'admin' ? formData.author : currentUser,
+          status,
+          scheduledPublishAt: status === 'scheduled' ? scheduledPublishAt : undefined,
         }),
       });
 
       if (response.ok) {
-        const allArticles = await fetch('/api/articles').then(res => res.json());
+        const allArticles = await fetch('/api/articles?includeScheduled=true').then(res => res.json());
         const filteredArticles = allArticles.filter((article: Article) => article.author === currentUser);
         setArticles(filteredArticles);
         resetForm();
+        
+        let message = '';
+        if (editingId) {
+          message = 'Your article has been successfully updated.';
+        } else if (status === 'scheduled') {
+          const scheduleDate = new Date(scheduledPublishAt!).toLocaleString();
+          message = `Your article has been scheduled and will be published on ${scheduleDate}!`;
+        } else {
+          message = 'Your article has been created and is now live on the homepage!';
+        }
+        
         setModalState({
           isOpen: true,
-          title: editingId ? 'Article Updated!' : 'Article Created!',
-          message: editingId 
-            ? 'Your article has been successfully updated.' 
-            : 'Your article has been created and is now live on the homepage!',
+          title: editingId ? 'Article Updated!' : status === 'scheduled' ? 'Article Scheduled!' : 'Article Created!',
+          message,
           type: 'success',
         });
       }
@@ -154,7 +181,7 @@ export default function AdminDashboardPage() {
       });
 
       if (response.ok) {
-        const allArticles = await fetch('/api/articles').then(res => res.json());
+        const allArticles = await fetch('/api/articles?includeScheduled=true').then(res => res.json());
         // Master admin sees all, others see only their own
         if (currentUser === 'admin') {
           setArticles(allArticles);
@@ -179,6 +206,16 @@ export default function AdminDashboardPage() {
       videoUrl: '',
       thumbnail: '',
     });
+    setScheduledPublishAt(undefined);
+    setPublishOption('now');
+  };
+
+  const handleScheduleConfirm = (dateTime: string) => {
+    setScheduledPublishAt(dateTime);
+    // Automatically submit the form after setting the date
+    setTimeout(() => {
+      document.getElementById('article-form')?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    }, 100);
   };
 
   if (typeof window !== 'undefined' && localStorage.getItem('adminAuth') !== 'true') {
@@ -207,7 +244,53 @@ export default function AdminDashboardPage() {
               {editingId ? 'Edit Article' : 'Add New Article'}
             </h2>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form id="article-form" onSubmit={handleSubmit} className="space-y-4">
+              {currentUser === 'ghalyndra' && !editingId && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-2xl p-6 mb-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    📅 Publishing Options *
+                  </label>
+                  <div className="space-y-3">
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="publishOption"
+                        value="now"
+                        checked={publishOption === 'now'}
+                        onChange={(e) => setPublishOption('now')}
+                        className="w-5 h-5 text-primary focus:ring-primary"
+                      />
+                      <span className="text-gray-900 dark:text-white font-medium">Publish Now</span>
+                    </label>
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="publishOption"
+                        value="schedule"
+                        checked={publishOption === 'schedule'}
+                        onChange={(e) => setPublishOption('schedule')}
+                        className="w-5 h-5 text-primary focus:ring-primary"
+                      />
+                      <span className="text-gray-900 dark:text-white font-medium">Schedule for Later</span>
+                    </label>
+                    {publishOption === 'schedule' && scheduledPublishAt && (
+                      <div className="ml-8 mt-2 p-3 bg-white dark:bg-gray-800 rounded-xl border border-blue-300 dark:border-blue-600">
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          ⏰ Scheduled for: <strong>{new Date(scheduledPublishAt).toLocaleString()}</strong>
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setIsDateTimePickerOpen(true)}
+                          className="mt-2 text-sm text-primary dark:text-pink-300 hover:underline"
+                        >
+                          Change Time
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Title *
@@ -347,8 +430,20 @@ export default function AdminDashboardPage() {
                     key={article.id}
                     className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 hover:shadow-md transition-shadow"
                   >
-                    <h3 className="font-bold text-primary dark:text-pink-300 mb-2">{article.title}</h3>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-bold text-primary dark:text-pink-300 flex-1">{article.title}</h3>
+                      {article.status === 'scheduled' && (
+                        <span className="ml-2 px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs rounded-full font-medium">
+                          ⏰ Scheduled
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{article.date}</p>
+                    {article.status === 'scheduled' && article.scheduledPublishAt && (
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mb-2">
+                        Will publish: {new Date(article.scheduledPublishAt).toLocaleString()}
+                      </p>
+                    )}
                     {currentUser === 'admin' && article.author && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                         By: {article.author === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
@@ -382,6 +477,13 @@ export default function AdminDashboardPage() {
         title={modalState.title}
         message={modalState.message}
         type={modalState.type}
+      />
+      
+      <DateTimePickerModal
+        isOpen={isDateTimePickerOpen}
+        onClose={() => setIsDateTimePickerOpen(false)}
+        onConfirm={handleScheduleConfirm}
+        initialDateTime={scheduledPublishAt}
       />
     </div>
   );

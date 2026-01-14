@@ -39,9 +39,24 @@ async function saveArticles(articles: Article[]): Promise<void> {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const articles = await getArticles();
+    const { searchParams } = new URL(request.url);
+    const includeScheduled = searchParams.get('includeScheduled') === 'true';
+    
+    let articles = await getArticles();
+    
+    // Filter out scheduled articles that haven't been published yet (for public view)
+    if (!includeScheduled) {
+      const now = new Date();
+      articles = articles.filter(article => {
+        if (article.status === 'scheduled' && article.scheduledPublishAt) {
+          return new Date(article.scheduledPublishAt) <= now;
+        }
+        return article.status !== 'scheduled';
+      });
+    }
+    
     return NextResponse.json(articles);
   } catch (error) {
     console.error('GET error:', error);

@@ -55,7 +55,7 @@ export default function Home() {
       </div>
       
       {/* Author Tabs */}
-      <div className="bg-pink-100 dark:bg-pink-200">
+      <div className="bg-pink-50 dark:bg-pink-100">
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-center gap-4 mb-8">
           <button

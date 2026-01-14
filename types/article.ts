@@ -9,4 +9,6 @@ export interface Article {
   thumbnail?: string;
   likes?: number;
   author: 'ghalyndra' | 'masyanda';
+  status?: 'draft' | 'scheduled' | 'published';
+  scheduledPublishAt?: string; // ISO date string
 }
