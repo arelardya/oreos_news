@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
           content: formData.content || '',
           image: formData.imageUrl || formData.thumbnail || null,
           date: formData.date || new Date().toISOString().split('T')[0],
-          author: currentUser === 'admin' ? (formData.author || 'masyanda') : currentUser,
+          author: currentUser === 'admin' ? (formData.author || 'ghalyndra') : currentUser,
           status,
           scheduledPublishAt: status === 'scheduled' ? scheduledPublishAt : undefined,
           likes: formData.likes || 0,
