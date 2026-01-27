@@ -62,3 +62,18 @@ CREATE TABLE IF NOT EXISTS gallery_photos (
 
 CREATE INDEX IF NOT EXISTS idx_gallery_photos_created_at ON gallery_photos(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_gallery_photos_uploaded_by ON gallery_photos(uploaded_by);
+
+-- Crossword word bank table (for Ghalyndra to add words)
+CREATE TABLE IF NOT EXISTS crossword_words (
+  id SERIAL PRIMARY KEY,
+  word VARCHAR(50) NOT NULL,
+  clue TEXT NOT NULL,
+  category VARCHAR(100) NULL,
+  difficulty VARCHAR(20) NOT NULL DEFAULT 'medium',
+  created_by VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  times_used INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_crossword_words_difficulty ON crossword_words(difficulty);
+CREATE INDEX IF NOT EXISTS idx_crossword_words_category ON crossword_words(category);

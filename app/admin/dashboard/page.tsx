@@ -244,10 +244,18 @@ export default function AdminDashboardPage() {
         <div className="mb-8">
           <button
             onClick={() => router.push('/admin/gallery')}
-            className="px-6 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium hover:shadow-lg transition-all"
+            className="px-6 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium hover:shadow-lg transition-all mr-4"
           >
             📸 Manage Gallery
           </button>
+          {(currentUser === 'ghalyndra' || currentUser === 'admin') && (
+            <button
+              onClick={() => router.push('/admin/crossword')}
+              className="px-6 py-2 bg-gradient-to-r from-accent to-primary text-white rounded-full font-medium hover:shadow-lg transition-all"
+            >
+              🧩 Manage Crosswords
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
