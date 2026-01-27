@@ -224,8 +224,8 @@ export default function GalleryManagementPage() {
                   Upload Image *
                 </label>
                 <ImageUpload
-                  onUpload={(file) => handleImageUpload(file)}
-                  currentImage={formData.imageUrl}
+                  onUploadAction={(file) => handleImageUpload(file)}
+                  currentUrl={formData.imageUrl}
                   disabled={uploadingImage}
                 />
               </div>
