@@ -1,43 +1,6 @@
 import { NextResponse } from 'next/server';
-import Redis from 'ioredis';
+import { sql } from '@/lib/db';
 import { Article } from '@/types/article';
-
-const ARTICLES_KEY = 'articles';
-
-function getRedisClient() {
-  if (!process.env.REDIS_URL) {
-    throw new Error('REDIS_URL environment variable is not set');
-  }
-  return new Redis(process.env.REDIS_URL, {
-    maxRetriesPerRequest: 3,
-    enableReadyCheck: false,
-  });
-}
-
-async function getArticles(): Promise<Article[]> {
-  const redis = getRedisClient();
-  try {
-    const data = await redis.get(ARTICLES_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch (error) {
-    console.error('Redis get error:', error);
-    return [];
-  } finally {
-    redis.disconnect();
-  }
-}
-
-async function saveArticles(articles: Article[]): Promise<void> {
-  const redis = getRedisClient();
-  try {
-    await redis.set(ARTICLES_KEY, JSON.stringify(articles));
-  } catch (error) {
-    console.error('Redis set error:', error);
-    throw error;
-  } finally {
-    redis.disconnect();
-  }
-}
 
 /**
  * This endpoint checks for scheduled articles that need to be published
@@ -45,33 +8,25 @@ async function saveArticles(articles: Article[]): Promise<void> {
  */
 export async function GET() {
   try {
-    const articles = await getArticles();
     const now = new Date();
-    let publishedCount = 0;
+    
+    // Update all scheduled articles that should be published
+    const result = await sql`
+      UPDATE articles
+      SET status = 'published'
+      WHERE status = 'scheduled'
+        AND scheduled_publish_at IS NOT NULL
+        AND scheduled_publish_at <= ${now.toISOString()}
+      RETURNING id, title
+    `;
 
-    const updatedArticles = articles.map(article => {
-      if (
-        article.status === 'scheduled' &&
-        article.scheduledPublishAt &&
-        new Date(article.scheduledPublishAt) <= now
-      ) {
-        publishedCount++;
-        return {
-          ...article,
-          status: 'published' as const,
-        };
-      }
-      return article;
-    });
-
-    if (publishedCount > 0) {
-      await saveArticles(updatedArticles);
-    }
+    const publishedCount = result.length;
 
     return NextResponse.json({
       success: true,
       publishedCount,
       message: `Published ${publishedCount} scheduled article(s)`,
+      articles: result,
     });
   } catch (error) {
     console.error('Error publishing scheduled articles:', error);
