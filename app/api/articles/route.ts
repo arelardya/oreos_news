@@ -28,8 +28,8 @@ async function createArticle(article: Article): Promise<void> {
       scheduled_publish_at, likes
     ) VALUES (
       ${article.id}, ${article.title}, ${article.slug}, 
-      ${article.excerpt}, ${article.content}, ${article.image},
-      ${article.date}, ${article.category}, ${article.author},
+      ${article.excerpt || null}, ${article.content}, ${article.image || null},
+      ${article.date}, ${article.category || null}, ${article.author},
       ${article.status || 'published'},
       ${article.scheduledPublishAt || null},
       ${article.likes || 0}
@@ -42,11 +42,11 @@ async function updateArticle(article: Article): Promise<void> {
     UPDATE articles SET
       title = ${article.title},
       slug = ${article.slug},
-      excerpt = ${article.excerpt},
+      excerpt = ${article.excerpt || null},
       content = ${article.content},
-      image = ${article.image},
+      image = ${article.image || null},
       date = ${article.date},
-      category = ${article.category},
+      category = ${article.category || null},
       author = ${article.author},
       status = ${article.status || 'published'},
       scheduled_publish_at = ${article.scheduledPublishAt || null},

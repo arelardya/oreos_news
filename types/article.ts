@@ -2,11 +2,11 @@ export interface Article {
   id: string;
   title: string;
   slug: string;
-  excerpt: string;
+  excerpt?: string;
   content: string;
-  image: string;
+  image?: string;
   date: string;
-  category: string;
+  category?: string;
   author: string;
   status?: 'draft' | 'scheduled' | 'published';
   scheduledPublishAt?: string; // ISO date string
