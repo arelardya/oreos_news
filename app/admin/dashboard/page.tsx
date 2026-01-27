@@ -121,13 +121,16 @@ export default function AdminDashboardPage() {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
-          slug,
           id: editingId || Date.now().toString(),
+          title: formData.title,
+          slug,
+          content: formData.content || '',
+          image: formData.imageUrl || formData.thumbnail || null,
           date: formData.date || new Date().toISOString().split('T')[0],
-          author: currentUser === 'admin' ? formData.author : currentUser,
+          author: currentUser === 'admin' ? (formData.author || 'masyanda') : currentUser,
           status,
           scheduledPublishAt: status === 'scheduled' ? scheduledPublishAt : undefined,
+          likes: formData.likes || 0,
         }),
       });
 
