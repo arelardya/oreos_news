@@ -60,6 +60,34 @@ export default function Navbar() {
               Home
             </Link>
             <Link
+              href="/gallery"
+              className={`text-sm sm:text-base font-medium transition-colors ${
+                isActive('/gallery')
+                  ? isTransparent
+                    ? 'text-white dark:text-white border-b-2 border-white'
+                    : 'text-primary dark:text-pink-300 border-b-2 border-primary dark:border-pink-300'
+                  : isTransparent
+                    ? 'text-white/80 dark:text-white/80 hover:text-white dark:hover:text-white'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-pink-300'
+              }`}
+            >
+              Gallery
+            </Link>
+            <Link
+              href="/crossword"
+              className={`text-sm sm:text-base font-medium transition-colors ${
+                isActive('/crossword')
+                  ? isTransparent
+                    ? 'text-white dark:text-white border-b-2 border-white'
+                    : 'text-primary dark:text-pink-300 border-b-2 border-primary dark:border-pink-300'
+                  : isTransparent
+                    ? 'text-white/80 dark:text-white/80 hover:text-white dark:hover:text-white'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-pink-300'
+              }`}
+            >
+              Crossword
+            </Link>
+            <Link
               href="/about"
               className={`text-sm sm:text-base font-medium transition-colors ${
                 isActive('/about')

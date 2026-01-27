@@ -228,7 +228,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="py-12 px-4 md:px-8">
       <div className="container mx-auto max-w-6xl px-4 pt-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-4">
           <h1 className="text-4xl font-bold text-primary dark:text-pink-300">
             {currentUser === 'admin' ? 'Master Admin Dashboard' : 
              currentUser === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'} Dashboard
@@ -238,6 +238,15 @@ export default function AdminDashboardPage() {
             className="px-6 py-2 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-colors"
           >
             Logout
+          </button>
+        </div>
+
+        <div className="mb-8">
+          <button
+            onClick={() => router.push('/admin/gallery')}
+            className="px-6 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium hover:shadow-lg transition-all"
+          >
+            📸 Manage Gallery
           </button>
         </div>
 

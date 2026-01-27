@@ -48,3 +48,17 @@ CREATE TABLE IF NOT EXISTS crossword_scores (
 
 CREATE INDEX IF NOT EXISTS idx_crossword_scores_game_id ON crossword_scores(game_id);
 CREATE INDEX IF NOT EXISTS idx_crossword_scores_score ON crossword_scores(score DESC);
+
+-- Gallery photos table (for individual photo uploads)
+CREATE TABLE IF NOT EXISTS gallery_photos (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NULL,
+  image_url VARCHAR(1000) NOT NULL,
+  uploaded_by VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  likes INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_gallery_photos_created_at ON gallery_photos(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_gallery_photos_uploaded_by ON gallery_photos(uploaded_by);
