@@ -1,42 +1,63 @@
 import { NextResponse } from 'next/server';
-import Redis from 'ioredis';
+import { sql } from '@/lib/db';
 import { Article } from '@/types/article';
 
-const ARTICLES_KEY = 'articles';
-
-function getRedisClient() {
-  if (!process.env.REDIS_URL) {
-    throw new Error('REDIS_URL environment variable is not set');
-  }
-  return new Redis(process.env.REDIS_URL, {
-    maxRetriesPerRequest: 3,
-    enableReadyCheck: false,
-  });
-}
-
 async function getArticles(): Promise<Article[]> {
-  const redis = getRedisClient();
   try {
-    const data = await redis.get(ARTICLES_KEY);
-    return data ? JSON.parse(data) : [];
+    const result = await sql`
+      SELECT 
+        id, title, slug, excerpt, content, image, 
+        date, category, author, status, 
+        scheduled_publish_at as "scheduledPublishAt",
+        likes, created_at as "createdAt", updated_at as "updatedAt"
+      FROM articles
+      ORDER BY date DESC
+    `;
+    return result as Article[];
   } catch (error) {
-    console.error('Redis get error:', error);
+    console.error('Database get error:', error);
     return [];
-  } finally {
-    redis.disconnect();
   }
 }
 
-async function saveArticles(articles: Article[]): Promise<void> {
-  const redis = getRedisClient();
-  try {
-    await redis.set(ARTICLES_KEY, JSON.stringify(articles));
-  } catch (error) {
-    console.error('Redis set error:', error);
-    throw error;
-  } finally {
-    redis.disconnect();
-  }
+async function createArticle(article: Article): Promise<void> {
+  await sql`
+    INSERT INTO articles (
+      id, title, slug, excerpt, content, image, 
+      date, category, author, status, 
+      scheduled_publish_at, likes
+    ) VALUES (
+      ${article.id}, ${article.title}, ${article.slug}, 
+      ${article.excerpt}, ${article.content}, ${article.image},
+      ${article.date}, ${article.category}, ${article.author},
+      ${article.status || 'published'},
+      ${article.scheduledPublishAt || null},
+      ${article.likes || 0}
+    )
+  `;
+}
+
+async function updateArticle(article: Article): Promise<void> {
+  await sql`
+    UPDATE articles SET
+      title = ${article.title},
+      slug = ${article.slug},
+      excerpt = ${article.excerpt},
+      content = ${article.content},
+      image = ${article.image},
+      date = ${article.date},
+      category = ${article.category},
+      author = ${article.author},
+      status = ${article.status || 'published'},
+      scheduled_publish_at = ${article.scheduledPublishAt || null},
+      likes = ${article.likes || 0},
+      updated_at = NOW()
+    WHERE id = ${article.id}
+  `;
+}
+
+async function deleteArticle(id: string): Promise<void> {
+  await sql`DELETE FROM articles WHERE id = ${id}`;
 }
 
 export async function GET(request: Request) {
@@ -69,9 +90,7 @@ export async function POST(request: Request) {
     const newArticle: Article = await request.json();
     console.log('Creating article:', newArticle.id);
     
-    const articles = await getArticles();
-    articles.unshift(newArticle);
-    await saveArticles(articles);
+    await createArticle(newArticle);
     
     console.log('Article created successfully');
     return NextResponse.json({ success: true, article: newArticle });
@@ -88,16 +107,8 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const updatedArticle: Article = await request.json();
-    const articles = await getArticles();
-    const index = articles.findIndex(a => a.id === updatedArticle.id);
-    
-    if (index !== -1) {
-      articles[index] = updatedArticle;
-      await saveArticles(articles);
-      return NextResponse.json({ success: true, article: updatedArticle });
-    }
-    
-    return NextResponse.json({ success: false, error: 'Article not found' }, { status: 404 });
+    await updateArticle(updatedArticle);
+    return NextResponse.json({ success: true, article: updatedArticle });
   } catch (error) {
     console.error('Failed to update article:', error);
     return NextResponse.json({ success: false, error: 'Failed to update article' }, { status: 500 });
@@ -107,9 +118,7 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    const articles = await getArticles();
-    const filtered = articles.filter(a => a.id !== id);
-    await saveArticles(filtered);
+    await deleteArticle(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete article:', error);
