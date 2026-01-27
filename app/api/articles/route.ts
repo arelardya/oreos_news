@@ -13,7 +13,12 @@ async function getArticles(): Promise<Article[]> {
       FROM articles
       ORDER BY date DESC
     `;
-    return result as Article[];
+    // Map database fields to display fields for backward compatibility
+    return result.map((article: any) => ({
+      ...article,
+      imageUrl: article.image,
+      thumbnail: article.image,
+    })) as Article[];
   } catch (error) {
     console.error('Database get error:', error);
     return [];
