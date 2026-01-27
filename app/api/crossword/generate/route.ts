@@ -43,7 +43,9 @@ function generateCrossword(words: Word[], size: number = 15) {
     for (let i = 0; i < firstWord.word.length; i++) {
       grid[row][col + i] = { letter: firstWord.word[i], isBlack: false };
     }
-    grid[row][col].number = clueNumber;
+    if (grid[row][col]) {
+      grid[row][col]!.number = clueNumber;
+    }
     placedWords.push({ word: firstWord, row, col, isVertical: false, number: clueNumber++ });
   }
   
@@ -79,7 +81,9 @@ function generateCrossword(words: Word[], size: number = 15) {
             // Check if placement is valid
             if (canPlaceWord(grid, word.word, newRow, newCol, isVertical, size)) {
               placeWord(grid, word.word, newRow, newCol, isVertical);
-              grid[newRow][newCol].number = clueNumber;
+              if (grid[newRow][newCol]) {
+                grid[newRow][newCol]!.number = clueNumber;
+              }
               placedWords.push({ word, row: newRow, col: newCol, isVertical, number: clueNumber++ });
               placed = true;
               break;
