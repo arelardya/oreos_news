@@ -84,6 +84,9 @@ export default function CrosswordGamePage() {
 
   const handleKeyDown = (e: React.KeyboardEvent, row: number, col: number) => {
     if (!game) return;
+    
+    // Only process input if this cell is selected
+    if (selectedCell?.row !== row || selectedCell?.col !== col) return;
 
     if (e.key === 'Backspace') {
       e.preventDefault();
@@ -302,7 +305,7 @@ export default function CrosswordGamePage() {
                         <div
                           key={colIndex}
                           className={`
-                            w-10 h-10 border border-gray-300 dark:border-gray-600 relative
+                            w-14 h-14 border-2 border-gray-300 dark:border-gray-600 relative
                             ${isBlack 
                               ? 'bg-gray-900 dark:bg-gray-950' 
                               : isSelected 
@@ -313,7 +316,7 @@ export default function CrosswordGamePage() {
                           onClick={() => handleCellClick(rowIndex, colIndex)}
                         >
                           {cell.number && (
-                            <span className="absolute top-0 left-0.5 text-[8px] font-bold text-gray-600 dark:text-gray-400">
+                            <span className="absolute top-0.5 left-1 text-xs font-bold text-gray-600 dark:text-gray-400">
                               {cell.number}
                             </span>
                           )}
@@ -326,8 +329,8 @@ export default function CrosswordGamePage() {
                               onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
                               onClick={() => handleCellClick(rowIndex, colIndex)}
                               className={`
-                                w-full h-full text-center text-xl font-bold uppercase
-                                bg-transparent outline-none
+                                w-full h-full text-center text-3xl font-bold uppercase
+                                bg-transparent outline-none caret-transparent
                                 ${showSolution ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}
                               `}
                               readOnly={showSolution}
