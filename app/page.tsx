@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import HeroSection from '@/components/HeroSection';
+import CountdownTimer from '@/components/CountdownTimer';
 import QuoteSection from '@/components/QuoteSection';
 import ArticleGrid from '@/components/ArticleGrid';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -57,6 +58,7 @@ export default function Home() {
     <>
       <div className="bg-gradient-to-b from-primary via-accent via-30% to-pink-50 dark:from-primary-dark dark:via-pink-300 dark:via-30% dark:to-pink-100">
         <HeroSection />
+        <CountdownTimer />
         <QuoteSection />
       </div>
       
