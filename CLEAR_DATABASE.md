@@ -3,7 +3,7 @@
 ## Option 1: Using Vercel Dashboard (Recommended)
 
 1. Go to https://vercel.com/dashboard/stores
-2. Find your `oreos-news-articles` KV database
+2. Find your `masyandra-articles` KV database
 3. Click on it
 4. Go to the "Data" tab
 5. Find the key named `articles`

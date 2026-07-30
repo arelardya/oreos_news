@@ -1,6 +1,6 @@
-# Ghalyndra's Journal
+# Masyandra
 
-A cute, playful article-based website built with Next.js 14, featuring an admin dashboard with authentication, dark mode, and image upload functionality.
+A warm, personal article-based website built with Next.js 14, featuring an admin dashboard with authentication, dark mode, and image upload functionality.
 
 ## Features
 

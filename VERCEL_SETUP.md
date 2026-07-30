@@ -5,7 +5,7 @@
 1. Go to https://vercel.com/dashboard/stores
 2. Click "Create Database"
 3. Select "Blob"
-4. Name it: `oreos-news-images`
+4. Name it: `masyandra-images`
 5. Click "Create"
 6. Go to your project → Settings → Environment Variables
 7. Vercel should auto-add `BLOB_READ_WRITE_TOKEN`
@@ -23,7 +23,7 @@
 1. Go to https://neon.tech
 2. Sign up/Sign in with your GitHub account
 3. Click "Create Project"
-4. Name it: `oreos-news-db`
+4. Name it: `masyandra-db`
 5. Select closest region to your users
 6. Click "Create Project"
 7. Copy the connection string (starts with `postgresql://`)

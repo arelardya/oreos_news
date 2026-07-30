@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { setAuthUser, getAuthUser, AdminUser } from '@/lib/auth';
+import Logo from '@/components/Logo';
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('');
@@ -10,19 +12,18 @@ export default function AdminLoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (localStorage.getItem('adminAuth') === 'true') {
+    if (getAuthUser()) {
       router.push('/admin/dashboard');
     }
   }, [router]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if ((username === 'ghalyndra' && password === 'oreo') || 
+
+    if ((username === 'ghalyndra' && password === 'oreo') ||
         (username === 'masyanda' && password === 'chiro') ||
         (username === 'admin' && password === 'oreos2025')) {
-      localStorage.setItem('adminAuth', 'true');
-      localStorage.setItem('adminUser', username);
+      setAuthUser(username as AdminUser);
       router.push('/admin/dashboard');
     } else {
       setError('Invalid username or password');
@@ -31,16 +32,22 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-primary dark:text-pink-300 text-center mb-8">
-            Admin Login
+    <div className="min-h-[80vh] bg-cream flex items-center justify-center px-4">
+      <div className="max-w-sm w-full">
+        <div className="flex justify-center mb-6">
+          <Logo size="lg" />
+        </div>
+        <div className="bg-white border border-primary/15 rounded-lg shadow-sm p-8">
+          <p className="text-center text-xs tracking-[0.25em] uppercase text-primary-dark/70 mb-2">
+            Just for us
+          </p>
+          <h1 className="font-serif text-3xl text-primary text-center mb-8">
+            Sign in
           </h1>
-          
-          <form onSubmit={handleLogin} className="space-y-6">
+
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="username" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
                 Username
               </label>
               <input
@@ -48,14 +55,14 @@ export default function AdminLoginPage() {
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2.5 border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary focus:outline-none bg-cream text-ink"
                 placeholder="Enter username"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
                 Password
               </label>
               <input
@@ -63,7 +70,7 @@ export default function AdminLoginPage() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2.5 border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary focus:outline-none bg-cream text-ink"
                 placeholder="Enter password"
                 required
               />
@@ -74,7 +81,7 @@ export default function AdminLoginPage() {
 
             <button
               type="submit"
-              className="w-full bg-primary dark:bg-primary-dark text-white py-3 px-6 rounded-full font-medium hover:bg-primary-dark dark:hover:bg-accent hover:scale-105 transition-all duration-300 shadow-md"
+              className="w-full bg-primary text-white py-3 px-6 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors"
             >
               Login
             </button>

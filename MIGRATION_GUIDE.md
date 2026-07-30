@@ -15,7 +15,7 @@
 
 Follow the steps in [VERCEL_SETUP.md](VERCEL_SETUP.md):
 1. Create Neon account at https://neon.tech
-2. Create new project: `oreos-news-db`
+2. Create new project: `masyandra-db`
 3. Copy connection string
 4. Add to Vercel env vars as `DATABASE_URL`
 

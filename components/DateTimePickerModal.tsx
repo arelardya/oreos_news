@@ -55,14 +55,14 @@ export default function DateTimePickerModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold text-primary dark:text-pink-300 mb-6">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
+        <h2 className="text-2xl font-bold text-primary mb-6">
           Schedule Publish Time
         </h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Date
             </label>
             <input
@@ -70,24 +70,24 @@ export default function DateTimePickerModal({
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-900"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Time
             </label>
             <input
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-900"
             />
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p className="text-sm text-blue-800">
               {selectedDate && selectedTime ? (
                 <>
                   Article will be published on{' '}
@@ -106,13 +106,13 @@ export default function DateTimePickerModal({
           <button
             onClick={handleConfirm}
             disabled={!selectedDate || !selectedTime}
-            className="flex-1 bg-primary dark:bg-primary-dark text-white py-3 px-6 rounded-full font-medium hover:bg-primary-dark dark:hover:bg-accent hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-primary text-white py-3 px-6 rounded-full font-medium hover:bg-primary-dark hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Confirm
           </button>
           <button
             onClick={handleCancel}
-            className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 py-3 px-6 rounded-full font-medium hover:bg-gray-400 dark:hover:bg-gray-500 transition-all duration-300"
+            className="flex-1 bg-gray-300 text-gray-700 py-3 px-6 rounded-full font-medium hover:bg-gray-400 transition-all duration-300"
           >
             Cancel
           </button>

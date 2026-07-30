@@ -41,16 +41,16 @@ export default function GalleryPage() {
     <div className="min-h-screen py-12 px-4">
       <div className="container mx-auto max-w-7xl">
         <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-pink-300 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             📸 Our Gallery
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
+          <p className="text-gray-600 text-lg">
             A collection of our favorite moments and memories
           </p>
         </header>
 
         {photos.length === 0 ? (
-          <div className="text-center text-gray-500 dark:text-gray-400 py-20">
+          <div className="text-center text-gray-500 py-20">
             <p className="text-xl">No photos yet. Start adding some memories! 💕</p>
           </div>
         ) : (
@@ -59,9 +59,9 @@ export default function GalleryPage() {
               <div
                 key={photo.id}
                 onClick={() => setSelectedPhoto(photo)}
-                className="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:scale-105"
+                className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-lg transition-all duration-300 cursor-pointer hover:shadow-lg"
               >
-                <div className="relative h-64 w-full bg-gray-200 dark:bg-gray-700">
+                <div className="relative h-64 w-full bg-gray-200">
                   <Image
                     src={photo.imageUrl}
                     alt={photo.title}
@@ -71,14 +71,14 @@ export default function GalleryPage() {
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1 line-clamp-1">
+                  <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">
                     {photo.title}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-gray-500">
                     {photo.uploadedBy === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
                   </p>
                   {photo.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-2">
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">
                       {photo.description}
                     </p>
                   )}
@@ -111,19 +111,19 @@ export default function GalleryPage() {
                   sizes="90vw"
                 />
               </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-b-2xl">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="bg-white p-6 rounded-b-2xl">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   {selectedPhoto.title}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300 mb-2">
+                <p className="text-gray-600 mb-2">
                   By {selectedPhoto.uploadedBy === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
                 </p>
                 {selectedPhoto.description && (
-                  <p className="text-gray-700 dark:text-gray-200 mt-4">
+                  <p className="text-gray-700 mt-4">
                     {selectedPhoto.description}
                   </p>
                 )}
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                <p className="text-sm text-gray-500 mt-4">
                   {new Date(selectedPhoto.createdAt).toLocaleDateString()}
                 </p>
               </div>

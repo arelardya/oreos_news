@@ -1,7 +1,7 @@
 :root {
-  --primary: #FF69B4;
-  --primary-dark: #FF1493;
-  --accent: #FFB6C1;
+  --primary: #B25E33;
+  --primary-dark: #8C4526;
+  --accent: #D9A566;
 }
 
 * {
@@ -15,15 +15,14 @@
 @tailwind utilities;
 
 body {
-  @apply bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100;
-  font-family: 'Ubuntu', sans-serif;
+  @apply bg-cream text-ink;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply font-bold;
+  @apply font-serif font-semibold;
 }
 
 a {

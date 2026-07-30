@@ -22,11 +22,11 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search articles..."
-          className="w-full px-6 py-4 pr-12 rounded-full border-2 border-pink-300 dark:border-pink-300 focus:border-primary dark:focus:border-accent focus:outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-md transition-all"
+          className="w-full px-6 py-4 pr-12 rounded-full border-2 border-accent focus:border-primary focus:outline-none bg-white text-gray-900 placeholder-gray-400 shadow-md transition-all"
         />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary dark:bg-primary-dark text-white rounded-full hover:bg-primary-dark dark:hover:bg-accent transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors"
           aria-label="Search"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

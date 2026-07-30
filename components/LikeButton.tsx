@@ -56,9 +56,9 @@ export default function LikeButton({ articleId, initialLikes }: LikeButtonProps)
       onClick={handleLike}
       className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
         isLiked
-          ? 'bg-primary dark:bg-primary-dark text-white hover:bg-primary-dark dark:hover:bg-accent'
-          : 'bg-pink-100 dark:bg-gray-700 text-primary dark:text-pink-300 hover:bg-pink-200 dark:hover:bg-gray-600'
-      } hover:scale-105 shadow-md`}
+          ? 'bg-primary text-white hover:bg-primary-dark'
+          : 'bg-accent/15 text-primary hover:bg-accent/25'
+      } hover:shadow-lg shadow-md`}
     >
       <span className={`text-2xl ${isAnimating ? 'animate-bounce' : ''}`}>
         {isLiked ? '💖' : '🤍'}

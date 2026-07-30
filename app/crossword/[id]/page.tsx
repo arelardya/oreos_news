@@ -238,10 +238,10 @@ export default function CrosswordGamePage() {
     return (
       <div className="min-h-screen py-12 px-4">
         <div className="container mx-auto max-w-4xl text-center">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold mb-4 text-gray-900">
             Game Not Found
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-gray-600 mb-8">
             Sorry, we couldn't find that crossword puzzle.
           </p>
           <BackButton />
@@ -253,13 +253,13 @@ export default function CrosswordGamePage() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+        return 'bg-green-100 text-green-800';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+        return 'bg-yellow-100 text-yellow-800';
       case 'hard':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+        return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -271,7 +271,7 @@ export default function CrosswordGamePage() {
         </div>
 
         <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary dark:text-pink-300 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             {game.title}
           </h1>
           <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold uppercase ${getDifficultyColor(game.difficulty)}`}>
@@ -280,11 +280,11 @@ export default function CrosswordGamePage() {
         </header>
 
         {completed && (
-          <div className="mb-8 bg-green-100 dark:bg-green-900/30 border-2 border-green-500 rounded-3xl p-6 text-center">
-            <p className="text-2xl font-bold text-green-800 dark:text-green-300 mb-2">
+          <div className="mb-8 bg-green-100 border-2 border-green-500 rounded-2xl p-6 text-center">
+            <p className="text-2xl font-bold text-green-800 mb-2">
               🎉 Congratulations! 🎉
             </p>
-            <p className="text-green-700 dark:text-green-400">
+            <p className="text-green-700">
               You've completed this crossword puzzle!
             </p>
           </div>
@@ -293,7 +293,7 @@ export default function CrosswordGamePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Crossword Grid */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="inline-block" style={{ touchAction: 'none' }}>
                 {game.gridData.map((row, rowIndex) => (
                   <div key={rowIndex} className="flex">
@@ -305,18 +305,18 @@ export default function CrosswordGamePage() {
                         <div
                           key={colIndex}
                           className={`
-                            w-14 h-14 border-2 border-gray-300 dark:border-gray-600 relative
+                            w-14 h-14 border-2 border-gray-300 relative
                             ${isBlack 
-                              ? 'bg-gray-900 dark:bg-gray-950' 
+                              ? 'bg-gray-900' 
                               : isSelected 
-                                ? 'bg-blue-200 dark:bg-blue-900' 
-                                : 'bg-white dark:bg-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600'
+                                ? 'bg-blue-200' 
+                                : 'bg-white cursor-pointer hover:bg-gray-100'
                             }
                           `}
                           onClick={() => handleCellClick(rowIndex, colIndex)}
                         >
                           {cell.number && (
-                            <span className="absolute top-0.5 left-1 text-xs font-bold text-gray-600 dark:text-gray-400">
+                            <span className="absolute top-0.5 left-1 text-xs font-bold text-gray-600">
                               {cell.number}
                             </span>
                           )}
@@ -331,7 +331,7 @@ export default function CrosswordGamePage() {
                               className={`
                                 w-full h-full text-center text-3xl font-bold uppercase
                                 bg-transparent outline-none caret-transparent
-                                ${showSolution ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}
+                                ${showSolution ? 'text-blue-600' : 'text-gray-900'}
                               `}
                               readOnly={showSolution}
                             />
@@ -369,18 +369,18 @@ export default function CrosswordGamePage() {
 
           {/* Clues */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 sticky top-4">
+            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-4">
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <span className="mr-2">➡️</span> Across
                 </h3>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {game.cluesAcross.map((clue) => (
                     <div key={clue.number} className="text-sm">
-                      <span className="font-bold text-primary dark:text-pink-300">
+                      <span className="font-bold text-primary">
                         {clue.number}.
                       </span>{' '}
-                      <span className="text-gray-700 dark:text-gray-300">
+                      <span className="text-gray-700">
                         {clue.clue}
                       </span>
                     </div>
@@ -389,16 +389,16 @@ export default function CrosswordGamePage() {
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <span className="mr-2">⬇️</span> Down
                 </h3>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {game.cluesDown.map((clue) => (
                     <div key={clue.number} className="text-sm">
-                      <span className="font-bold text-primary dark:text-pink-300">
+                      <span className="font-bold text-primary">
                         {clue.number}.
                       </span>{' '}
-                      <span className="text-gray-700 dark:text-gray-300">
+                      <span className="text-gray-700">
                         {clue.clue}
                       </span>
                     </div>

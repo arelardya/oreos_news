@@ -7,10 +7,22 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   message: string;
-  type?: 'success' | 'error' | 'info';
+  type?: 'success' | 'error' | 'info' | 'confirm';
+  onConfirm?: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
-export default function Modal({ isOpen, onClose, title, message, type = 'success' }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  message,
+  type = 'success',
+  onConfirm,
+  confirmLabel = 'Delete',
+  cancelLabel = 'Cancel',
+}: ModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -32,6 +44,8 @@ export default function Modal({ isOpen, onClose, title, message, type = 'success
         return '❌';
       case 'info':
         return 'ℹ️';
+      case 'confirm':
+        return '🗑️';
       default:
         return '🎉';
     }
@@ -40,33 +54,56 @@ export default function Modal({ isOpen, onClose, title, message, type = 'success
   const getColorClass = () => {
     switch (type) {
       case 'success':
-        return 'text-primary dark:text-pink-300';
+        return 'text-primary';
       case 'error':
-        return 'text-red-500 dark:text-red-400';
+        return 'text-red-500';
       case 'info':
-        return 'text-blue-500 dark:text-blue-400';
+        return 'text-blue-500';
+      case 'confirm':
+        return 'text-primary-dark';
       default:
-        return 'text-primary dark:text-pink-300';
+        return 'text-primary';
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8 transform transition-all animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-8">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-bounce">{getIcon()}</div>
-          <h2 className={`text-2xl font-bold ${getColorClass()} mb-4`}>
+          <div className="text-5xl mb-4">{getIcon()}</div>
+          <h2 className={`font-serif text-2xl ${getColorClass()} mb-3`}>
             {title}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg">
+          <p className="text-gray-600 mb-6">
             {message}
           </p>
-          <button
-            onClick={onClose}
-            className="w-full bg-primary dark:bg-primary-dark text-white py-3 px-6 rounded-full font-medium hover:bg-primary-dark dark:hover:bg-accent hover:scale-105 transition-all duration-300 shadow-md"
-          >
-            Close
-          </button>
+
+          {type === 'confirm' ? (
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 bg-white border border-primary/30 text-gray-600 py-3 px-6 rounded-full text-sm uppercase tracking-wide hover:bg-gray-50 transition-colors"
+              >
+                {cancelLabel}
+              </button>
+              <button
+                onClick={() => {
+                  onConfirm?.();
+                  onClose();
+                }}
+                className="flex-1 bg-red-500 text-white py-3 px-6 rounded-full text-sm uppercase tracking-wide hover:bg-red-600 transition-colors"
+              >
+                {confirmLabel}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onClose}
+              className="w-full bg-primary text-white py-3 px-6 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors"
+            >
+              Close
+            </button>
+          )}
         </div>
       </div>
     </div>

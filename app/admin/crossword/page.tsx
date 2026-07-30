@@ -36,6 +36,7 @@ export default function CrosswordManagementPage() {
     message: '',
     type: 'success',
   });
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
   const [generateForm, setGenerateForm] = useState({
     title: '',
@@ -50,13 +51,13 @@ export default function CrosswordManagementPage() {
     }
 
     const user = localStorage.getItem('adminUser') as 'ghalyndra' | 'masyanda' | 'admin';
-    
+
     // Only Ghalyndra and admin can access this page
     if (user !== 'ghalyndra' && user !== 'admin') {
       router.push('/admin/dashboard');
       return;
     }
-    
+
     setCurrentUser(user);
     fetchWords();
   }, [router]);
@@ -71,12 +72,6 @@ export default function CrosswordManagementPage() {
     } catch (error) {
       console.error('Error fetching words:', error);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('adminUser');
-    router.push('/admin');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,8 +130,6 @@ export default function CrosswordManagementPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this word?')) return;
-
     try {
       const response = await fetch('/api/crossword/words', {
         method: 'DELETE',
@@ -202,96 +195,97 @@ export default function CrosswordManagementPage() {
 
   if (!currentUser) return null;
 
-  const getDifficultyColor = (difficulty: string) => {
+  const inputClass = "w-full px-4 py-2.5 border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary focus:outline-none bg-cream text-ink";
+  const labelClass = "block text-xs uppercase tracking-wide text-gray-500 mb-2";
+  const userLabel = currentUser === 'admin' ? 'Master Admin' : 'Ghalyndra 💙';
+
+  const getDifficultyClass = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-      case 'hard': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+      case 'easy': return 'bg-sage/20 text-sage';
+      case 'medium': return 'bg-accent/20 text-primary-dark';
+      case 'hard': return 'bg-primary/15 text-primary-dark';
+      default: return 'bg-gray-100 text-gray-600';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="container mx-auto max-w-7xl px-4 pt-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-primary dark:text-pink-300">
-            🧩 Crossword Manager
-          </h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => router.push('/admin/dashboard')}
-              className="px-6 py-2 bg-primary text-white rounded-full font-medium hover:bg-primary-dark transition-colors"
-            >
-              ← Back to Dashboard
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-colors"
-            >
-              Logout
-            </button>
+    <div className="bg-cream min-h-screen">
+      <div
+        className="h-3"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(90deg, #F3D9D0 0px, #F3D9D0 22px, #E8AFA3 22px, #E8AFA3 44px)',
+        }}
+      />
+
+      <div className="container mx-auto max-w-7xl px-4 py-12">
+        <div className="flex flex-wrap justify-between items-end gap-4 mb-10">
+          <div>
+            <p className="text-xs tracking-[0.25em] uppercase text-primary-dark/70 mb-2">
+              {userLabel}
+            </p>
+            <h1 className="font-serif text-3xl md:text-4xl text-primary">
+              🧩 Crossword
+            </h1>
           </div>
+          <button
+            onClick={() => router.push('/admin/dashboard')}
+            className="text-xs uppercase tracking-wide px-5 py-2.5 border border-primary/40 text-primary rounded-full hover:bg-primary hover:text-white transition-colors"
+          >
+            ← Back to Dashboard
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Add Word Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-primary dark:text-pink-300 mb-6">
+          <div className="bg-white border border-primary/15 rounded-lg p-6 md:p-8">
+            <h2 className="font-serif text-2xl text-primary-dark mb-6">
               Add Word
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Word *
-                </label>
+                <label className={labelClass}>Word *</label>
                 <input
                   type="text"
                   required
                   value={formData.word}
                   onChange={(e) => setFormData({ ...formData, word: e.target.value.toUpperCase() })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white uppercase"
+                  className={`${inputClass} uppercase`}
                   placeholder="EXAMPLE"
                   maxLength={20}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Clue *
-                </label>
+                <label className={labelClass}>Clue *</label>
                 <textarea
                   required
                   rows={3}
                   value={formData.clue}
                   onChange={(e) => setFormData({ ...formData, clue: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                  className={`${inputClass} resize-none`}
                   placeholder="A sample or model..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Category (Optional)
-                </label>
+                <label className={labelClass}>Category (optional)</label>
                 <input
                   type="text"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className={inputClass}
                   placeholder="General, Science, etc."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Difficulty *
-                </label>
+                <label className={labelClass}>Difficulty *</label>
                 <select
                   value={formData.difficulty}
                   onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className={inputClass}
                 >
                   <option value="easy">Easy</option>
                   <option value="medium">Medium</option>
@@ -301,54 +295,52 @@ export default function CrosswordManagementPage() {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-primary to-accent text-white py-3 px-6 rounded-full font-medium hover:shadow-lg transition-all"
+                className="w-full bg-primary text-white py-3 px-6 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors"
               >
-                ➕ Add Word
+                Add Word
               </button>
             </form>
           </div>
 
           {/* Generate Crossword Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-primary dark:text-pink-300 mb-6">
+          <div className="bg-white border border-primary/15 rounded-lg p-6 md:p-8">
+            <h2 className="font-serif text-2xl text-primary-dark mb-6">
               Generate Puzzle
             </h2>
 
-            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                <strong>Word Bank Stats:</strong><br />
-                Total words: {words.length}
+            <div className="mb-6 p-4 bg-blush-light border border-dashed border-primary/30 rounded-lg">
+              <p className="text-xs uppercase tracking-wide text-primary-dark/70 mb-1">
+                Word bank stats
               </p>
-              <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                Easy: {words.filter(w => w.difficulty === 'easy').length} •
-                Medium: {words.filter(w => w.difficulty === 'medium').length} •
-                Hard: {words.filter(w => w.difficulty === 'hard').length}
+              <p className="text-sm text-ink">
+                {words.length} total words
+              </p>
+              <div className="mt-1 text-xs text-gray-600">
+                Easy: {words.filter(w => w.difficulty === 'easy').length} ·
+                {' '}Medium: {words.filter(w => w.difficulty === 'medium').length} ·
+                {' '}Hard: {words.filter(w => w.difficulty === 'hard').length}
               </div>
             </div>
 
-            <form onSubmit={handleGenerateCrossword} className="space-y-4">
+            <form onSubmit={handleGenerateCrossword} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Puzzle Title *
-                </label>
+                <label className={labelClass}>Puzzle title *</label>
                 <input
                   type="text"
                   required
                   value={generateForm.title}
                   onChange={(e) => setGenerateForm({ ...generateForm, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className={inputClass}
                   placeholder="Daily Challenge #1"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Difficulty *
-                </label>
+                <label className={labelClass}>Difficulty *</label>
                 <select
                   value={generateForm.difficulty}
                   onChange={(e) => setGenerateForm({ ...generateForm, difficulty: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className={inputClass}
                 >
                   <option value="easy">Easy</option>
                   <option value="medium">Medium</option>
@@ -357,18 +349,16 @@ export default function CrosswordManagementPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Number of Words: {generateForm.wordCount}
-                </label>
+                <label className={labelClass}>Number of words: {generateForm.wordCount}</label>
                 <input
                   type="range"
                   min="5"
                   max="20"
                   value={generateForm.wordCount}
                   onChange={(e) => setGenerateForm({ ...generateForm, wordCount: parseInt(e.target.value) })}
-                  className="w-full"
+                  className="w-full accent-primary"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   Recommended: 10-15 words
                 </p>
               </div>
@@ -376,13 +366,13 @@ export default function CrosswordManagementPage() {
               <button
                 type="submit"
                 disabled={generating || words.length < 5}
-                className="w-full bg-gradient-to-r from-accent to-primary text-white py-3 px-6 rounded-full font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary text-white py-3 px-6 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {generating ? '⏳ Generating...' : '🎲 Generate Crossword'}
+                {generating ? 'Generating...' : 'Generate Crossword'}
               </button>
 
               {words.length < 5 && (
-                <p className="text-xs text-red-500 dark:text-red-400 text-center">
+                <p className="text-xs text-red-500 text-center">
                   Add at least 5 words to generate a crossword
                 </p>
               )}
@@ -390,48 +380,48 @@ export default function CrosswordManagementPage() {
           </div>
 
           {/* Word List */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 lg:col-span-1">
-            <h2 className="text-2xl font-bold text-primary dark:text-pink-300 mb-6">
+          <div className="bg-white border border-primary/15 rounded-lg p-6 md:p-8 lg:col-span-1">
+            <h2 className="font-serif text-2xl text-primary-dark mb-6">
               Word Bank ({words.length})
             </h2>
 
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            <div className="space-y-3 max-h-[700px] overflow-y-auto">
               {words.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                  No words yet. Start building your crossword bank! 🧩
+                <p className="text-gray-500 text-center py-8 text-sm">
+                  No words yet — start building your crossword bank 🧩
                 </p>
               ) : (
                 words.map((word) => (
                   <div
                     key={word.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-shadow"
+                    className="border border-dashed border-primary/25 rounded-lg p-4 hover:border-primary/50 transition-colors"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
-                        <h3 className="font-bold text-lg text-gray-900 dark:text-white">
+                        <h3 className="font-serif text-lg text-primary-dark">
                           {word.word}
                         </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                        <p className="text-sm text-gray-600 mt-1">
                           {word.clue}
                         </p>
                       </div>
                       <button
-                        onClick={() => handleDelete(word.id)}
-                        className="text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                        onClick={() => setDeleteTarget(word.id)}
+                        className="text-xs uppercase tracking-wide text-red-500 hover:text-red-600 ml-2"
                       >
-                        ✕
+                        Delete
                       </button>
                     </div>
                     <div className="flex gap-2 items-center mt-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(word.difficulty)}`}>
+                      <span className={`px-2 py-1 rounded-full text-[10px] uppercase tracking-wide font-medium ${getDifficultyClass(word.difficulty)}`}>
                         {word.difficulty}
                       </span>
                       {word.category && (
-                        <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                        <span className="px-2 py-1 rounded-full text-[10px] uppercase tracking-wide bg-primary/10 text-primary-dark">
                           {word.category}
                         </span>
                       )}
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                      <span className="text-xs text-gray-500 ml-auto">
                         Used {word.timesUsed}x
                       </span>
                     </div>
@@ -449,6 +439,15 @@ export default function CrosswordManagementPage() {
         title={modalState.title}
         message={modalState.message}
         type={modalState.type}
+      />
+
+      <Modal
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        title="Delete this word?"
+        message="This can't be undone — it'll be removed from the crossword word bank."
+        type="confirm"
+        onConfirm={() => deleteTarget !== null && handleDelete(deleteTarget)}
       />
     </div>
   );

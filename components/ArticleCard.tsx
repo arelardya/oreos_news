@@ -10,33 +10,37 @@ interface ArticleCardProps {
 export default function ArticleCard({ article }: ArticleCardProps) {
   return (
     <Link href={`/article/${article.slug}`}>
-      <article className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 h-full flex flex-col">
+      <article className="bg-white border border-dashed border-primary/25 rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
         {article.thumbnail && (
-          <div className="relative h-48 w-full bg-gray-200 dark:bg-gray-700">
-            <Image
-              src={article.thumbnail}
-              alt={article.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
+          <div className="relative h-48 w-full bg-gray-100 p-2 pb-0">
+            <div className="relative h-full w-full rounded-sm overflow-hidden">
+              <Image
+                src={article.thumbnail}
+                alt={article.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            </div>
           </div>
         )}
         <div className="p-6 flex-1 flex flex-col">
-          <time className="text-sm text-accent dark:text-pink-300 font-medium mb-2">
-            {formatDate(article.date)}
-          </time>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            Written by {article.author === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
-          </p>
-          <h3 className="text-xl font-bold text-primary dark:text-pink-300 mb-3 hover:text-primary-dark dark:hover:text-accent transition-colors">
+          <div className="flex items-center justify-between mb-3">
+            <time className="text-[11px] uppercase tracking-widest text-accent font-medium">
+              {formatDate(article.date)}
+            </time>
+            <p className="text-xs text-gray-500">
+              {article.author === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷'}
+            </p>
+          </div>
+          <h3 className="font-serif text-2xl text-primary-dark mb-3 hover:text-primary transition-colors">
             {article.title}
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 line-clamp-3 flex-1">
+          <p className="text-gray-600 text-sm line-clamp-3 flex-1">
             {article.content.split('\n\n')[0]}
           </p>
           <div className="mt-4">
-            <span className="text-primary dark:text-pink-300 font-medium hover:text-primary-dark dark:hover:text-accent transition-colors">
+            <span className="text-primary text-sm font-medium hover:text-primary-dark transition-colors">
               Read more →
             </span>
           </div>

@@ -26,6 +26,7 @@ export default function GalleryManagementPage() {
     imageUrl: '',
   });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     title: string;
@@ -61,12 +62,6 @@ export default function GalleryManagementPage() {
     } catch (error) {
       console.error('Error fetching photos:', error);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('adminUser');
-    router.push('/admin');
   };
 
   const handleImageUpload = async (file: File) => {
@@ -136,8 +131,6 @@ export default function GalleryManagementPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this photo?')) return;
-
     try {
       const response = await fetch('/api/gallery', {
         method: 'DELETE',
@@ -161,68 +154,71 @@ export default function GalleryManagementPage() {
 
   if (!currentUser) return null;
 
+  const inputClass = "w-full px-4 py-2.5 border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary focus:outline-none bg-cream text-ink";
+  const labelClass = "block text-xs uppercase tracking-wide text-gray-500 mb-2";
+  const userLabel = currentUser === 'admin' ? 'Master Admin' : currentUser === 'ghalyndra' ? 'Ghalyndra 💙' : 'Masyanda 🩷';
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="container mx-auto max-w-6xl px-4 pt-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-primary dark:text-pink-300">
-            📸 Gallery Manager
-          </h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => router.push('/admin/dashboard')}
-              className="px-6 py-2 bg-primary text-white rounded-full font-medium hover:bg-primary-dark transition-colors"
-            >
-              ← Back to Articles
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-colors"
-            >
-              Logout
-            </button>
+    <div className="bg-cream min-h-screen">
+      <div
+        className="h-3"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(90deg, #F3D9D0 0px, #F3D9D0 22px, #E8AFA3 22px, #E8AFA3 44px)',
+        }}
+      />
+
+      <div className="container mx-auto max-w-6xl px-4 py-12">
+        <div className="flex flex-wrap justify-between items-end gap-4 mb-10">
+          <div>
+            <p className="text-xs tracking-[0.25em] uppercase text-primary-dark/70 mb-2">
+              {userLabel}
+            </p>
+            <h1 className="font-serif text-3xl md:text-4xl text-primary">
+              📸 Gallery
+            </h1>
           </div>
+          <button
+            onClick={() => router.push('/admin/dashboard')}
+            className="text-xs uppercase tracking-wide px-5 py-2.5 border border-primary/40 text-primary rounded-full hover:bg-primary hover:text-white transition-colors"
+          >
+            ← Back to Dashboard
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Upload Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-primary dark:text-pink-300 mb-6">
+          <div className="bg-white border border-primary/15 rounded-lg p-6 md:p-8">
+            <h2 className="font-serif text-2xl text-primary-dark mb-6">
               Upload Photo
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Photo Title *
-                </label>
+                <label className={labelClass}>Photo title *</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className={inputClass}
                   placeholder="Enter photo title..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Description (Optional)
-                </label>
+                <label className={labelClass}>Description (optional)</label>
                 <textarea
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                  className={`${inputClass} resize-none`}
                   placeholder="Add a description..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Upload Image *
-                </label>
+                <label className={labelClass}>Upload image *</label>
                 <ImageUpload
                   onUploadAction={(file) => handleImageUpload(file)}
                   currentUrl={formData.imageUrl}
@@ -233,32 +229,32 @@ export default function GalleryManagementPage() {
               <button
                 type="submit"
                 disabled={uploadingImage}
-                className="w-full bg-gradient-to-r from-primary to-accent text-white py-3 px-6 rounded-full font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                className="w-full bg-primary text-white py-3 px-6 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {uploadingImage ? 'Uploading...' : '📸 Upload to Gallery'}
+                {uploadingImage ? 'Uploading...' : 'Upload to Gallery'}
               </button>
             </form>
           </div>
 
           {/* Photo List */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-primary dark:text-pink-300 mb-6">
+          <div className="bg-white border border-primary/15 rounded-lg p-6 md:p-8">
+            <h2 className="font-serif text-2xl text-primary-dark mb-6">
               Your Photos ({photos.length})
             </h2>
 
-            <div className="space-y-4 max-h-[600px] overflow-y-auto">
+            <div className="space-y-4 max-h-[700px] overflow-y-auto">
               {photos.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                  No photos uploaded yet. Start adding to your gallery! 📷
+                <p className="text-gray-500 text-center py-8 text-sm">
+                  No photos uploaded yet — start adding to your gallery 📷
                 </p>
               ) : (
                 photos.map((photo) => (
                   <div
                     key={photo.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 hover:shadow-md transition-shadow"
+                    className="border border-dashed border-primary/25 rounded-lg p-4 hover:border-primary/50 transition-colors"
                   >
                     <div className="flex gap-4">
-                      <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                      <div className="relative w-24 h-24 flex-shrink-0 rounded-md overflow-hidden">
                         <Image
                           src={photo.imageUrl}
                           alt={photo.title}
@@ -267,21 +263,21 @@ export default function GalleryManagementPage() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                        <h3 className="font-serif text-lg text-primary-dark truncate">
                           {photo.title}
                         </h3>
                         {photo.description && (
-                          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                             {photo.description}
                           </p>
                         )}
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        <p className="text-xs text-gray-500 mt-2">
                           {new Date(photo.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                       <button
-                        onClick={() => handleDelete(photo.id)}
-                        className="text-red-500 hover:text-red-700 font-medium text-sm"
+                        onClick={() => setDeleteTarget(photo.id)}
+                        className="self-start text-xs uppercase tracking-wide text-red-500 hover:text-red-600"
                       >
                         Delete
                       </button>
@@ -300,6 +296,15 @@ export default function GalleryManagementPage() {
         title={modalState.title}
         message={modalState.message}
         type={modalState.type}
+      />
+
+      <Modal
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        title="Delete this photo?"
+        message="This can't be undone — the photo will be removed from the gallery."
+        type="confirm"
+        onConfirm={() => deleteTarget !== null && handleDelete(deleteTarget)}
       />
     </div>
   );

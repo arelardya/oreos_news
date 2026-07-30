@@ -77,3 +77,24 @@ CREATE TABLE IF NOT EXISTS crossword_words (
 
 CREATE INDEX IF NOT EXISTS idx_crossword_words_difficulty ON crossword_words(difficulty);
 CREATE INDEX IF NOT EXISTS idx_crossword_words_category ON crossword_words(category);
+
+-- Daily question exchanged between partners
+CREATE TABLE IF NOT EXISTS daily_questions (
+  id SERIAL PRIMARY KEY,
+  question_date DATE NOT NULL UNIQUE,
+  question TEXT NOT NULL,
+  asked_by VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Each partner's answer to a daily question
+CREATE TABLE IF NOT EXISTS daily_answers (
+  id SERIAL PRIMARY KEY,
+  question_id INTEGER NOT NULL REFERENCES daily_questions(id) ON DELETE CASCADE,
+  author VARCHAR(50) NOT NULL,
+  answer TEXT NOT NULL,
+  answered_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  UNIQUE(question_id, author)
+);
+
+CREATE INDEX IF NOT EXISTS idx_daily_questions_date ON daily_questions(question_date DESC);
