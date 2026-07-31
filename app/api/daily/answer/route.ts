@@ -9,6 +9,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing questionId, author, or answer' }, { status: 400 });
     }
 
+    const [question] = await sql`SELECT asked_by as "askedBy" FROM daily_questions WHERE id = ${questionId}`;
+    if (!question) {
+      return NextResponse.json({ error: 'Question not found' }, { status: 404 });
+    }
+    if (question.askedBy === author) {
+      return NextResponse.json({ error: "You can't answer your own question" }, { status: 400 });
+    }
+
     const result = await sql`
       INSERT INTO daily_answers (question_id, author, answer)
       VALUES (${questionId}, ${author}, ${answer})

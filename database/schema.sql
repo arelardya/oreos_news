@@ -78,10 +78,13 @@ CREATE TABLE IF NOT EXISTS crossword_words (
 CREATE INDEX IF NOT EXISTS idx_crossword_words_difficulty ON crossword_words(difficulty);
 CREATE INDEX IF NOT EXISTS idx_crossword_words_category ON crossword_words(category);
 
--- Daily question exchanged between partners
+-- Daily question exchanged between partners. Only one question can be
+-- unanswered at a time (enforced in the API, not the schema) so there's no
+-- uniqueness constraint on question_date -- a resolved thread can be
+-- followed by a new question the same calendar day.
 CREATE TABLE IF NOT EXISTS daily_questions (
   id SERIAL PRIMARY KEY,
-  question_date DATE NOT NULL UNIQUE,
+  question_date DATE NOT NULL,
   question TEXT NOT NULL,
   asked_by VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW()

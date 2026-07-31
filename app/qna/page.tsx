@@ -38,8 +38,6 @@ const OTHER_USER: Record<string, string> = {
 };
 
 function jakartaToday() {
-  // en-CA gives YYYY-MM-DD, computed consistently in WIB regardless of the
-  // device's own timezone so both of you always agree on what "today" is.
   return new Date().toLocaleDateString('en-CA', { timeZone: JAKARTA_TZ });
 }
 
@@ -63,7 +61,7 @@ export default function QnAPage() {
   const [questions, setQuestions] = useState<DailyQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [newQuestion, setNewQuestion] = useState('');
-  const [answerDrafts, setAnswerDrafts] = useState<Record<number, string>>({});
+  const [answerDraft, setAnswerDraft] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [modalState, setModalState] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' }>({
     isOpen: false,
@@ -118,7 +116,7 @@ export default function QnAPage() {
 
   const handleAnswer = async (questionId: number, e: React.FormEvent) => {
     e.preventDefault();
-    const draft = (answerDrafts[questionId] || '').trim();
+    const draft = answerDraft.trim();
     if (!draft || !currentUser) return;
 
     setSubmitting(true);
@@ -129,7 +127,7 @@ export default function QnAPage() {
         body: JSON.stringify({ questionId, author: currentUser, answer: draft }),
       });
       if (res.ok) {
-        setAnswerDrafts((prev) => ({ ...prev, [questionId]: '' }));
+        setAnswerDraft('');
         await fetchQuestions();
       } else {
         setModalState({ isOpen: true, title: 'Oops', message: 'Could not save your answer. Try again.', type: 'error' });
@@ -154,98 +152,9 @@ export default function QnAPage() {
   }
 
   const partner = OTHER_USER[currentUser];
-  const hasTodayQuestion = questions.some((q) => dateStr(q.questionDate) === jakartaToday());
-
-  // Anything you haven't answered yet — newest first, so today's fresh
-  // question leads and any backlog you missed sits right below it.
-  const pending = questions.filter((q) => !q.answers.some((a) => a.author === currentUser));
-
-  // Everything you've already answered, whether or not your partner has
-  // caught up yet — this is the log, one row per exchange.
-  const answered = questions.filter((q) => q.answers.some((a) => a.author === currentUser));
-
-  const renderCard = (q: DailyQuestion) => {
-    const mine = q.answers.find((a) => a.author === currentUser);
-    const theirs = q.answers.find((a) => a.author === partner);
-    const bothAnswered = Boolean(mine && theirs);
-    const askedFor = OTHER_USER[q.askedBy] || partner;
-
-    return (
-      <div key={q.id} className="bg-white border border-dashed border-primary/25 rounded-lg p-6 md:p-8">
-        <p className="text-xs uppercase tracking-wide text-primary-dark/70 mb-2">
-          {PARTNER_LABEL[q.askedBy] || q.askedBy} asked {PARTNER_LABEL[askedFor] || askedFor} · {formatAskedAt(q.createdAt)}
-        </p>
-        <h2 className="font-serif text-xl md:text-2xl text-primary-dark mb-6">
-          {q.question}
-        </h2>
-
-        {!mine && (
-          <form onSubmit={(e) => handleAnswer(q.id, e)} className="space-y-3 mb-6">
-            <textarea
-              rows={3}
-              required
-              value={answerDrafts[q.id] || ''}
-              onChange={(e) => setAnswerDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))}
-              placeholder="Your answer..."
-              className="w-full px-4 py-3 border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary focus:outline-none bg-cream text-ink resize-none"
-            />
-            <button
-              type="submit"
-              disabled={submitting}
-              className="bg-primary text-white px-6 py-2.5 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors disabled:opacity-50"
-            >
-              {submitting ? 'Saving...' : 'Submit answer'}
-            </button>
-          </form>
-        )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-lg border border-primary/15 p-4">
-            <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
-              {PARTNER_LABEL[currentUser]}
-            </p>
-            {mine ? (
-              <p className="text-ink whitespace-pre-wrap">{mine.answer}</p>
-            ) : (
-              <p className="text-gray-400 italic text-sm">answer to reveal {PARTNER_LABEL[partner]}'s reply</p>
-            )}
-          </div>
-          <div className="rounded-lg border border-primary/15 p-4">
-            <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
-              {PARTNER_LABEL[partner]}
-            </p>
-            {!mine ? (
-              <p className="text-gray-400 italic text-sm">hidden until you answer</p>
-            ) : bothAnswered ? (
-              <p className="text-ink whitespace-pre-wrap">{theirs!.answer}</p>
-            ) : (
-              <p className="text-gray-400 italic text-sm">waiting for {PARTNER_LABEL[partner]} 💭</p>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderLogRow = (q: DailyQuestion) => {
-    const mine = q.answers.find((a) => a.author === currentUser);
-    const theirs = q.answers.find((a) => a.author === partner);
-
-    return (
-      <div key={q.id} className="py-4 border-b border-primary/10 last:border-0">
-        <p className="text-xs text-gray-400 mb-1">{dateStr(q.questionDate)}</p>
-        <p className="font-serif text-ink mb-2">{q.question}</p>
-        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 text-sm">
-          <p className="text-ink/80">
-            <span className="text-primary-dark">{PARTNER_LABEL[currentUser]}:</span> {mine?.answer}
-          </p>
-          <p className={theirs ? 'text-ink/80' : 'text-gray-400 italic'}>
-            <span className="text-primary-dark">{PARTNER_LABEL[partner]}:</span> {theirs ? theirs.answer : `waiting 💭`}
-          </p>
-        </div>
-      </div>
-    );
-  };
+  const current = questions.find((q) => q.answers.length === 0);
+  const history = questions.filter((q) => q.answers.length > 0);
+  const iAsked = current?.askedBy === currentUser;
 
   return (
     <div className="bg-cream min-h-screen">
@@ -268,10 +177,43 @@ export default function QnAPage() {
         </Reveal>
 
         <div className="space-y-8">
-          {!hasTodayQuestion && (
+          {current ? (
+            <div className="bg-white border border-dashed border-primary/25 rounded-lg p-6 md:p-8">
+              <p className="text-xs uppercase tracking-wide text-primary-dark/70 mb-2">
+                {PARTNER_LABEL[current.askedBy] || current.askedBy} asked {PARTNER_LABEL[OTHER_USER[current.askedBy]] || OTHER_USER[current.askedBy]} · {formatAskedAt(current.createdAt)}
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-primary-dark mb-6">
+                {current.question}
+              </h2>
+
+              {iAsked ? (
+                <p className="text-gray-400 italic text-sm">
+                  waiting for {PARTNER_LABEL[partner]} to answer 💭
+                </p>
+              ) : (
+                <form onSubmit={(e) => handleAnswer(current.id, e)} className="space-y-3">
+                  <textarea
+                    rows={3}
+                    required
+                    value={answerDraft}
+                    onChange={(e) => setAnswerDraft(e.target.value)}
+                    placeholder="Your answer..."
+                    className="w-full px-4 py-3 border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary focus:outline-none bg-cream text-ink resize-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="bg-primary text-white px-6 py-2.5 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors disabled:opacity-50"
+                  >
+                    {submitting ? 'Saving...' : 'Submit answer'}
+                  </button>
+                </form>
+              )}
+            </div>
+          ) : (
             <div className="bg-white border border-dashed border-primary/25 rounded-lg p-6 md:p-8">
               <h2 className="font-serif text-xl text-primary-dark mb-4">
-                No question yet today
+                Your turn to ask
               </h2>
               <form onSubmit={handleAskQuestion} className="space-y-3">
                 <textarea
@@ -279,7 +221,7 @@ export default function QnAPage() {
                   required
                   value={newQuestion}
                   onChange={(e) => setNewQuestion(e.target.value)}
-                  placeholder="What do you want to ask today?"
+                  placeholder={`What do you want to ask ${PARTNER_LABEL[partner]}?`}
                   className="w-full px-4 py-3 border border-primary/20 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary focus:outline-none bg-cream text-ink resize-none"
                 />
                 <button
@@ -287,32 +229,36 @@ export default function QnAPage() {
                   disabled={submitting}
                   className="bg-primary text-white px-6 py-2.5 rounded-full text-sm uppercase tracking-wide hover:bg-primary-dark transition-colors disabled:opacity-50"
                 >
-                  {submitting ? 'Posting...' : 'Ask today\'s question'}
+                  {submitting ? 'Posting...' : 'Ask a question'}
                 </button>
               </form>
             </div>
           )}
 
-          {pending.length > 0 && (
-            <div>
-              {pending.length > 1 && (
-                <p className="text-xs uppercase tracking-wide text-primary-dark/70 mb-4">
-                  {pending.length} waiting for your answer
-                </p>
-              )}
-              <div className="space-y-6">
-                {pending.map((q) => renderCard(q))}
-              </div>
-            </div>
-          )}
-
-          {answered.length > 0 && (
+          {history.length > 0 && (
             <div>
               <h2 className="font-serif text-2xl text-primary-dark mb-2">
                 History
               </h2>
               <div className="bg-white border border-primary/15 rounded-lg px-6 md:px-8">
-                {answered.map((q) => renderLogRow(q))}
+                {history.map((q) => {
+                  return (
+                    <div key={q.id} className="py-4 border-b border-primary/10 last:border-0">
+                      <p className="text-xs text-gray-400 mb-1">{dateStr(q.questionDate)}</p>
+                      <p className="font-serif text-ink mb-2">
+                        {q.question}
+                        <span className="text-xs text-gray-400 font-sans not-italic"> — asked by {PARTNER_LABEL[q.askedBy] || q.askedBy}</span>
+                      </p>
+                      <div className="space-y-1">
+                        {q.answers.map((a) => (
+                          <p key={a.id} className="text-sm text-ink/80">
+                            <span className="text-primary-dark">{PARTNER_LABEL[a.author] || a.author}:</span> {a.answer}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
