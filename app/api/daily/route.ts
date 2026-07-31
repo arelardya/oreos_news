@@ -28,15 +28,15 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { question, askedBy } = await request.json();
+    const { question, askedBy, date } = await request.json();
 
-    if (!question || !askedBy) {
-      return NextResponse.json({ error: 'Missing question or askedBy' }, { status: 400 });
+    if (!question || !askedBy || !date) {
+      return NextResponse.json({ error: 'Missing question, askedBy, or date' }, { status: 400 });
     }
 
     const result = await sql`
       INSERT INTO daily_questions (question_date, question, asked_by)
-      VALUES (CURRENT_DATE, ${question}, ${askedBy})
+      VALUES (${date}, ${question}, ${askedBy})
       ON CONFLICT (question_date) DO NOTHING
       RETURNING id, question_date as "questionDate", question, asked_by as "askedBy", created_at as "createdAt"
     `;
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     const existing = await sql`
       SELECT id, question_date as "questionDate", question, asked_by as "askedBy", created_at as "createdAt"
       FROM daily_questions
-      WHERE question_date = CURRENT_DATE
+      WHERE question_date = ${date}
     `;
 
     return NextResponse.json({ success: true, question: { ...existing[0], answers: [] } });

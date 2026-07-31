@@ -25,6 +25,8 @@ interface DailyQuestion {
   answers: Answer[];
 }
 
+const JAKARTA_TZ = 'Asia/Jakarta';
+
 const PARTNER_LABEL: Record<string, string> = {
   ghalyndra: 'Ghalyndra 💙',
   masyanda: 'Masyanda 🩷',
@@ -35,8 +37,10 @@ const OTHER_USER: Record<string, string> = {
   masyanda: 'ghalyndra',
 };
 
-function todayStr() {
-  return new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+function jakartaToday() {
+  // en-CA gives YYYY-MM-DD, computed consistently in WIB regardless of the
+  // device's own timezone so both of you always agree on what "today" is.
+  return new Date().toLocaleDateString('en-CA', { timeZone: JAKARTA_TZ });
 }
 
 function dateStr(isoDate: string) {
@@ -99,7 +103,7 @@ export default function QnAPage() {
       const res = await fetch('/api/daily', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: newQuestion.trim(), askedBy: currentUser }),
+        body: JSON.stringify({ question: newQuestion.trim(), askedBy: currentUser, date: jakartaToday() }),
       });
       if (res.ok) {
         setNewQuestion('');
@@ -139,11 +143,28 @@ export default function QnAPage() {
     return <LoadingSpinner />;
   }
 
-  const today = questions.find((q) => dateStr(q.questionDate) === todayStr());
-  const history = questions.filter((q) => q !== today);
-  const partner = OTHER_USER[currentUser];
+  if (currentUser === 'admin') {
+    return (
+      <div className="bg-cream min-h-screen flex items-center justify-center px-4">
+        <p className="text-gray-500 text-center max-w-sm">
+          Daily Q&A is a just-the-two-of-you thing — log in as Ghalyndra or Masyanda to ask and answer.
+        </p>
+      </div>
+    );
+  }
 
-  const renderQnA = (q: DailyQuestion) => {
+  const partner = OTHER_USER[currentUser];
+  const hasTodayQuestion = questions.some((q) => dateStr(q.questionDate) === jakartaToday());
+
+  // Anything you haven't answered yet — newest first, so today's fresh
+  // question leads and any backlog you missed sits right below it.
+  const pending = questions.filter((q) => !q.answers.some((a) => a.author === currentUser));
+
+  // Everything you've already answered, whether or not your partner has
+  // caught up yet — this is the log, one row per exchange.
+  const answered = questions.filter((q) => q.answers.some((a) => a.author === currentUser));
+
+  const renderCard = (q: DailyQuestion) => {
     const mine = q.answers.find((a) => a.author === currentUser);
     const theirs = q.answers.find((a) => a.author === partner);
     const bothAnswered = Boolean(mine && theirs);
@@ -206,6 +227,26 @@ export default function QnAPage() {
     );
   };
 
+  const renderLogRow = (q: DailyQuestion) => {
+    const mine = q.answers.find((a) => a.author === currentUser);
+    const theirs = q.answers.find((a) => a.author === partner);
+
+    return (
+      <div key={q.id} className="py-4 border-b border-primary/10 last:border-0">
+        <p className="text-xs text-gray-400 mb-1">{dateStr(q.questionDate)}</p>
+        <p className="font-serif text-ink mb-2">{q.question}</p>
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 text-sm">
+          <p className="text-ink/80">
+            <span className="text-primary-dark">{PARTNER_LABEL[currentUser]}:</span> {mine?.answer}
+          </p>
+          <p className={theirs ? 'text-ink/80' : 'text-gray-400 italic'}>
+            <span className="text-primary-dark">{PARTNER_LABEL[partner]}:</span> {theirs ? theirs.answer : `waiting 💭`}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-cream min-h-screen">
       <div
@@ -227,9 +268,7 @@ export default function QnAPage() {
         </Reveal>
 
         <div className="space-y-8">
-          {today ? (
-            renderQnA(today)
-          ) : (
+          {!hasTodayQuestion && (
             <div className="bg-white border border-dashed border-primary/25 rounded-lg p-6 md:p-8">
               <h2 className="font-serif text-xl text-primary-dark mb-4">
                 No question yet today
@@ -254,13 +293,26 @@ export default function QnAPage() {
             </div>
           )}
 
-          {history.length > 0 && (
+          {pending.length > 0 && (
             <div>
-              <h2 className="font-serif text-2xl text-primary-dark mb-4">
+              {pending.length > 1 && (
+                <p className="text-xs uppercase tracking-wide text-primary-dark/70 mb-4">
+                  {pending.length} waiting for your answer
+                </p>
+              )}
+              <div className="space-y-6">
+                {pending.map((q) => renderCard(q))}
+              </div>
+            </div>
+          )}
+
+          {answered.length > 0 && (
+            <div>
+              <h2 className="font-serif text-2xl text-primary-dark mb-2">
                 History
               </h2>
-              <div className="space-y-6">
-                {history.map((q) => renderQnA(q))}
+              <div className="bg-white border border-primary/15 rounded-lg px-6 md:px-8">
+                {answered.map((q) => renderLogRow(q))}
               </div>
             </div>
           )}
