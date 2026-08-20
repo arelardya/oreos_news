@@ -54,6 +54,13 @@ export default function HeroSection() {
         >
           Read our stories
         </a>
+
+        <p
+          className="mt-10 text-xs uppercase tracking-widest text-primary-dark/50 animate-fade-up"
+          style={{ animationDelay: '700ms', animationFillMode: 'both' }}
+        >
+          scroll down to find a surprise <span className="inline-block animate-bounce">🎉</span>
+        </p>
       </div>
     </section>
   );

@@ -20,23 +20,42 @@ export default function AnniversaryCard() {
 
   return (
     <div className="px-4 py-14 bg-blush">
-      <Reveal className="container mx-auto max-w-lg">
-        <div className="bg-white border border-dashed border-primary/30 rounded-lg p-6 md:p-8 text-center">
-          <p className="text-xs uppercase tracking-[0.25em] text-primary-dark/70 mb-2">
-            Happy
-          </p>
-          <p className="font-script text-5xl text-primary mb-4">
-            11 Months
-          </p>
-          <p className="text-sm text-ink/70 mb-6">
-            a little something for today 🎧
-          </p>
-          <audio controls className="w-full" preload="none">
-            <source src={AUDIO_SRC} type="audio/mp4" />
-            Your browser doesn't support audio playback.
-          </audio>
+      <div className="container mx-auto max-w-5xl relative">
+        <div className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 -rotate-3 text-4xl">
+          🎉
         </div>
-      </Reveal>
+        <div className="hidden lg:block absolute left-16 top-1/3 rotate-6">
+          <div className="bg-white p-2 pb-7 shadow-lg w-32 hover:rotate-0 hover:scale-105 transition-transform duration-300">
+            <img src="/assets/1.webp" alt="" className="w-full h-24 object-cover" />
+          </div>
+        </div>
+        <div className="hidden lg:block absolute right-16 top-1/3 -rotate-6">
+          <div className="bg-white p-2 pb-7 shadow-lg w-32 hover:rotate-0 hover:scale-105 transition-transform duration-300">
+            <img src="/assets/3.webp" alt="" className="w-full h-24 object-cover" />
+          </div>
+        </div>
+        <div className="hidden lg:block absolute right-4 top-1/2 -translate-y-1/2 rotate-3 text-4xl">
+          💕
+        </div>
+
+        <Reveal className="max-w-lg mx-auto">
+          <div className="bg-white border border-dashed border-primary/30 rounded-lg p-6 md:p-8 text-center">
+            <p className="text-xs uppercase tracking-[0.25em] text-primary-dark/70 mb-2">
+              Happy
+            </p>
+            <p className="font-script text-5xl text-primary mb-4">
+              11 Months
+            </p>
+            <p className="text-sm text-ink/70 mb-6">
+              a little something for today 🎧
+            </p>
+            <audio controls className="w-full" preload="none">
+              <source src={AUDIO_SRC} type="audio/mp4" />
+              Your browser doesn't support audio playback.
+            </audio>
+          </div>
+        </Reveal>
+      </div>
     </div>
   );
 }

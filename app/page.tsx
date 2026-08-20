@@ -6,7 +6,6 @@ import HeroSection from '@/components/HeroSection';
 import QuoteSection from '@/components/QuoteSection';
 import ArticleGrid from '@/components/ArticleGrid';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import QuickLinks from '@/components/QuickLinks';
 import CountdownTimer from '@/components/CountdownTimer';
 import AnniversaryCard from '@/components/AnniversaryCard';
 import Reveal from '@/components/Reveal';
@@ -61,9 +60,8 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <CountdownTimer />
       <AnniversaryCard />
-      <QuickLinks />
+      <CountdownTimer />
       <QuoteSection />
 
       <div id="articles" className="bg-cream pt-16">
