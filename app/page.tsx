@@ -7,6 +7,8 @@ import QuoteSection from '@/components/QuoteSection';
 import ArticleGrid from '@/components/ArticleGrid';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import QuickLinks from '@/components/QuickLinks';
+import CountdownTimer from '@/components/CountdownTimer';
+import AnniversaryCard from '@/components/AnniversaryCard';
 import Reveal from '@/components/Reveal';
 import { Article } from '@/types/article';
 
@@ -59,6 +61,8 @@ export default function Home() {
   return (
     <>
       <HeroSection />
+      <CountdownTimer />
+      <AnniversaryCard />
       <QuickLinks />
       <QuoteSection />
 
