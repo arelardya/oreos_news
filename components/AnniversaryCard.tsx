@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Reveal from './Reveal';
 
 const UNLOCK_AT = '2026-08-21T00:00:00+07:00';
-const AUDIO_SRC = '/audio/11-months.mp3';
+const AUDIO_SRC = '/audio/11-months.m4a';
 
 export default function AnniversaryCard() {
   const [unlocked, setUnlocked] = useState(false);
@@ -32,7 +32,7 @@ export default function AnniversaryCard() {
             a little something for today 🎧
           </p>
           <audio controls className="w-full" preload="none">
-            <source src={AUDIO_SRC} type="audio/mpeg" />
+            <source src={AUDIO_SRC} type="audio/mp4" />
             Your browser doesn't support audio playback.
           </audio>
         </div>
