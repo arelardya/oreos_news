@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Reveal from './Reveal';
+import { COUPLE_PHOTOS, pickTwoDistinct } from '@/lib/couplePhotos';
 
 const TARGET_DATE = '2026-08-31T12:00:00+07:00';
 
@@ -12,6 +13,11 @@ export default function CountdownTimer() {
     minutes: 0,
     seconds: 0,
   });
+  const [photos, setPhotos] = useState<[string, string]>([COUPLE_PHOTOS[0], COUPLE_PHOTOS[1]]);
+
+  useEffect(() => {
+    setPhotos(pickTwoDistinct(COUPLE_PHOTOS));
+  }, []);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -48,12 +54,12 @@ export default function CountdownTimer() {
       <div className="container mx-auto max-w-5xl relative">
         <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 -rotate-6">
           <div className="bg-white p-2 pb-7 shadow-lg w-36 hover:rotate-0 hover:scale-105 transition-transform duration-300">
-            <img src="/assets/2.webp" alt="" className="w-full h-28 object-cover" />
+            <img src={photos[0]} alt="" loading="lazy" className="w-full h-28 object-cover" />
           </div>
         </div>
         <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 rotate-6">
           <div className="bg-white p-2 pb-7 shadow-lg w-36 hover:rotate-0 hover:scale-105 transition-transform duration-300">
-            <img src="/assets/3.webp" alt="" className="w-full h-28 object-cover" />
+            <img src={photos[1]} alt="" loading="lazy" className="w-full h-28 object-cover" />
           </div>
         </div>
 

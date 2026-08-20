@@ -2,18 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import Reveal from './Reveal';
+import { COUPLE_PHOTOS, pickTwoDistinct } from '@/lib/couplePhotos';
 
 const UNLOCK_AT = '2026-08-21T00:00:00+07:00';
 const AUDIO_SRC = '/audio/11-months.m4a';
 
 export default function AnniversaryCard() {
   const [unlocked, setUnlocked] = useState(false);
+  const [photos, setPhotos] = useState<[string, string]>([COUPLE_PHOTOS[0], COUPLE_PHOTOS[1]]);
 
   useEffect(() => {
     const check = () => setUnlocked(new Date() >= new Date(UNLOCK_AT));
     check();
     const timer = setInterval(check, 30000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    setPhotos(pickTwoDistinct(COUPLE_PHOTOS));
   }, []);
 
   if (!unlocked) return null;
@@ -26,12 +32,12 @@ export default function AnniversaryCard() {
         </div>
         <div className="hidden lg:block absolute left-16 top-1/3 rotate-6">
           <div className="bg-white p-2 pb-7 shadow-lg w-32 hover:rotate-0 hover:scale-105 transition-transform duration-300">
-            <img src="/assets/1.webp" alt="" className="w-full h-24 object-cover" />
+            <img src={photos[0]} alt="" loading="lazy" className="w-full h-24 object-cover" />
           </div>
         </div>
         <div className="hidden lg:block absolute right-16 top-1/3 -rotate-6">
           <div className="bg-white p-2 pb-7 shadow-lg w-32 hover:rotate-0 hover:scale-105 transition-transform duration-300">
-            <img src="/assets/3.webp" alt="" className="w-full h-24 object-cover" />
+            <img src={photos[1]} alt="" loading="lazy" className="w-full h-24 object-cover" />
           </div>
         </div>
         <div className="hidden lg:block absolute right-4 top-1/2 -translate-y-1/2 rotate-3 text-4xl">
