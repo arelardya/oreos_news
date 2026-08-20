@@ -46,28 +46,39 @@ export default function CountdownTimer() {
   return (
     <div className="px-4 py-14 bg-blush-light">
       <Reveal className="container mx-auto max-w-2xl">
-        <div className="bg-white border border-dashed border-primary/30 rounded-lg p-6 md:p-8 text-center">
-          <p className="text-xs uppercase tracking-[0.25em] text-primary-dark/70 mb-2">
-            Counting down to
-          </p>
-          <p className="font-serif italic text-2xl text-primary mb-6">
-            seeing you again 💕
-          </p>
+        <div className="relative bg-white rounded-lg shadow-lg overflow-hidden border border-primary/15">
+          <div className="h-2 bg-gradient-to-r from-primary via-accent to-primary" />
 
-          <div className="grid grid-cols-4 gap-3 sm:gap-6 mb-4">
-            {units.map((unit) => (
-              <div key={unit.label}>
-                <div className="font-serif text-3xl sm:text-4xl text-primary">
-                  {String(unit.value).padStart(2, '0')}
+          <div className="p-8 md:p-10 text-center">
+            <p className="text-2xl mb-3">💌</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-primary-dark/60 mb-2">
+              Counting down to
+            </p>
+            <p className="font-script text-5xl text-primary mb-8">
+              seeing you again
+            </p>
+
+            <div className="flex items-stretch justify-center divide-x divide-dashed divide-primary/20">
+              {units.map((unit) => (
+                <div key={unit.label} className="flex-1 px-2 sm:px-5">
+                  <div className="bg-blush-light rounded-lg py-3 sm:py-4 mb-2 shadow-inner">
+                    <div className="font-serif text-3xl sm:text-5xl text-primary">
+                      {String(unit.value).padStart(2, '0')}
+                    </div>
+                  </div>
+                  <div className="text-[10px] sm:text-xs uppercase tracking-widest text-gray-400">
+                    {unit.label}
+                  </div>
                 </div>
-                <div className="text-[10px] sm:text-xs uppercase tracking-widest text-gray-400 mt-1">
-                  {unit.label}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-dashed border-primary/15">
+              <p className="font-serif italic text-sm text-primary-dark/70">
+                August 31, 2026 · 12:00 PM WIB
+              </p>
+            </div>
           </div>
-
-          <p className="text-xs text-gray-400">August 31, 2026 · 12:00 PM WIB</p>
         </div>
       </Reveal>
     </div>
