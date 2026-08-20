@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import Reveal from './Reveal';
-import { COUPLE_PHOTOS, pickTwoDistinct } from '@/lib/couplePhotos';
+import { getAuthUser } from '@/lib/auth';
 
-const UNLOCK_AT = '2026-08-21T00:00:00+07:00';
+const UNLOCK_AT = '2026-08-21T12:00:00+07:00';
 const AUDIO_SRC = '/audio/11-months.m4a';
 
-export default function AnniversaryCard() {
+interface AnniversaryCardProps {
+  photos: [string, string];
+}
+
+export default function AnniversaryCard({ photos }: AnniversaryCardProps) {
   const [unlocked, setUnlocked] = useState(false);
-  const [photos, setPhotos] = useState<[string, string]>([COUPLE_PHOTOS[0], COUPLE_PHOTOS[1]]);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const check = () => setUnlocked(new Date() >= new Date(UNLOCK_AT));
@@ -19,10 +23,17 @@ export default function AnniversaryCard() {
   }, []);
 
   useEffect(() => {
-    setPhotos(pickTwoDistinct(COUPLE_PHOTOS));
+    const sync = () => setLoggedIn(Boolean(getAuthUser()));
+    sync();
+    window.addEventListener('authchange', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('authchange', sync);
+      window.removeEventListener('storage', sync);
+    };
   }, []);
 
-  if (!unlocked) return null;
+  if (!unlocked || !loggedIn) return null;
 
   return (
     <div className="px-4 py-14 bg-blush">
@@ -45,20 +56,23 @@ export default function AnniversaryCard() {
         </div>
 
         <Reveal className="max-w-lg mx-auto">
-          <div className="bg-white border border-dashed border-primary/30 rounded-lg p-6 md:p-8 text-center">
-            <p className="text-xs uppercase tracking-[0.25em] text-primary-dark/70 mb-2">
-              Happy
-            </p>
-            <p className="font-script text-5xl text-primary mb-4">
-              11 Months
-            </p>
-            <p className="text-sm text-ink/70 mb-6">
-              a little something for today 🎧
-            </p>
-            <audio controls className="w-full" preload="none">
-              <source src={AUDIO_SRC} type="audio/mp4" />
-              Your browser doesn't support audio playback.
-            </audio>
+          <div className="relative -rotate-1">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-white/60 border border-white/80 shadow-sm rotate-2 z-10" />
+            <div className="bg-white border border-primary/10 shadow-lg px-6 py-10 md:px-10 md:py-12 text-center">
+              <p className="text-xs uppercase tracking-[0.25em] text-primary-dark/70 mb-2">
+                Happy
+              </p>
+              <p className="font-script text-5xl text-primary mb-4">
+                11 Months
+              </p>
+              <p className="text-sm text-ink/70 mb-6">
+                a little something for today 🎧
+              </p>
+              <audio controls className="w-full" preload="none">
+                <source src={AUDIO_SRC} type="audio/mp4" />
+                Your browser doesn't support audio playback.
+              </audio>
+            </div>
           </div>
         </Reveal>
       </div>

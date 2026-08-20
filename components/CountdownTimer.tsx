@@ -2,22 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import Reveal from './Reveal';
-import { COUPLE_PHOTOS, pickTwoDistinct } from '@/lib/couplePhotos';
 
 const TARGET_DATE = '2026-08-31T12:00:00+07:00';
 
-export default function CountdownTimer() {
+interface CountdownTimerProps {
+  photos: [string, string];
+}
+
+export default function CountdownTimer({ photos }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
-  const [photos, setPhotos] = useState<[string, string]>([COUPLE_PHOTOS[0], COUPLE_PHOTOS[1]]);
-
-  useEffect(() => {
-    setPhotos(pickTwoDistinct(COUPLE_PHOTOS));
-  }, []);
 
   useEffect(() => {
     const calculateTimeLeft = () => {

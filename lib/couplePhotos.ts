@@ -6,11 +6,19 @@ export const COUPLE_PHOTOS = [
   '/assets/couple-5.jpeg',
 ];
 
-export function pickTwoDistinct(photos: string[]): [string, string] {
-  const a = Math.floor(Math.random() * photos.length);
-  let b = Math.floor(Math.random() * photos.length);
-  while (b === a && photos.length > 1) {
-    b = Math.floor(Math.random() * photos.length);
+function shuffle<T>(items: T[]): T[] {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return [photos[a], photos[b]];
+  return arr;
+}
+
+/** Four photos so the two flanking pairs never repeat one -- falls back to
+ * cycling with repeats only if the pool has fewer than four photos. */
+export function pickFourDistinct(photos: string[]): [string, string, string, string] {
+  const shuffled = shuffle(photos);
+  const pick = (i: number) => shuffled[i % shuffled.length];
+  return [pick(0), pick(1), pick(2), pick(3)];
 }

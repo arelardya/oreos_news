@@ -10,10 +10,18 @@ import CountdownTimer from '@/components/CountdownTimer';
 import AnniversaryCard from '@/components/AnniversaryCard';
 import Reveal from '@/components/Reveal';
 import { Article } from '@/types/article';
+import { COUPLE_PHOTOS, pickFourDistinct } from '@/lib/couplePhotos';
 
 export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [featurePhotos, setFeaturePhotos] = useState<[string, string, string, string]>([
+    COUPLE_PHOTOS[0], COUPLE_PHOTOS[1], COUPLE_PHOTOS[2], COUPLE_PHOTOS[3],
+  ]);
+
+  useEffect(() => {
+    setFeaturePhotos(pickFourDistinct(COUPLE_PHOTOS));
+  }, []);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -60,8 +68,8 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <AnniversaryCard />
-      <CountdownTimer />
+      <AnniversaryCard photos={[featurePhotos[0], featurePhotos[1]]} />
+      <CountdownTimer photos={[featurePhotos[2], featurePhotos[3]]} />
       <QuoteSection />
 
       <div id="articles" className="bg-cream pt-16">
