@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Reveal from './Reveal';
 import { getAuthUser } from '@/lib/auth';
 
-const UNLOCK_AT = '2026-08-21T12:00:00+07:00';
+const UNLOCK_AT = '2026-08-21T00:00:00+07:00';
 const AUDIO_SRC = '/audio/11-months.m4a';
 
 interface AnniversaryCardProps {
